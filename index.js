@@ -5,6 +5,11 @@ const ejs = require('ejs')
 const mongoose = require('mongoose');
 const BlogPost = require('./models/BlogPost.js')
 var $ = require( "jquery" );
+let port = process.env.PORT;
+
+if(port == null||port==""){
+    port=4000;
+}
 
 
 mongoose.connect('mongodb+srv://user1:test123@cluster0.jc6do.mongodb.net/EM330?retryWrites=true&w=majority', {
@@ -44,7 +49,7 @@ app.post('/posts/store', async(req, res) => {
     })
 })
 
-app.listen(4000, () => {
+app.listen(port, () => {
     console.log("App listening on port 4000")
 })
 
