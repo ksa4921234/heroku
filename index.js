@@ -3,7 +3,7 @@ const path = require('path')
 const app = new express();
 const ejs = require('ejs')
 const mongoose = require('mongoose');
-const BlogPost = require('./models/BlogPost.js')
+const PowerPost = require('./models/PowerPost.js')
 var $ = require( "jquery" );
 let port = process.env.PORT;
 
@@ -22,9 +22,9 @@ app.use(express.json())
 app.use(express.urlencoded())
 
 app.get('/', async(req, res) => {
-    const blogposts = await BlogPost.find({})
+    const PowerPosts = await PowerPost.find({})
     res.render('index',{
-        blogposts:blogposts
+        PowerPosts:PowerPosts
     });
 })
 
