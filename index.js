@@ -22,32 +22,27 @@ app.use(express.json())
 app.use(express.urlencoded())
 
 app.get('/', async(req, res) => {
-    const PowerPosts = await PowerPost.find({})
+    const oneminPowerPosts = await PowerPost.find({})
     res.render('index',{
-        PowerPosts:PowerPosts
+        oneminPowerPosts:oneminPowerPosts
     });
 })
 
-app.get('/about', (req, res) => {
-    res.render('about');
+app.get('/10min', async(req, res) => {
+    const oneminPowerPosts = await PowerPost.find({})
+    var tenminsPowerPosts = 0
+    for(var i =0 ; i < oneminPowerPosts.length ; i++){
+        tenminsPowerPosts=tenminsPowerPosts + oneminPowerPosts[i].WATT
+    }
+    tenminsPowerPosts = tenminsPowerPosts/oneminPowerPosts.length
+    console.log(tenminsPowerPosts.toFixed(2))
+    res.render('10min',{
+        oneminPowerPosts:oneminPowerPosts,
+        tenminsPowerPosts:tenminsPowerPosts.toFixed(2)
+    });
 })
 
-app.get('/contact', (req, res) => {
-    res.render('contact');
-})
 
-app.get('/post', (req, res) => {
-    res.render('post');
-})
-
-app.get('/post/new', (req, res) => {
-    res.render('create')
-})
-
-app.post('/posts/store', async(req, res) => {
-    await BlogPost.create(req.body, (error, blogpost) => {
-    })
-})
 
 app.listen(port, () => {
     console.log("App listening on port 4000")
