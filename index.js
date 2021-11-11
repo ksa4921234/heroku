@@ -35,7 +35,6 @@ app.get('/10min', async(req, res) => {
         tenminsPowerPosts=tenminsPowerPosts + oneminPowerPosts[i].WATT
     }
     tenminsPowerPosts = tenminsPowerPosts/oneminPowerPosts.length
-    console.log(tenminsPowerPosts.toFixed(2))
     res.render('10min',{
         oneminPowerPosts:oneminPowerPosts,
         tenminsPowerPosts:tenminsPowerPosts.toFixed(2)
