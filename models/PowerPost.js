@@ -6,5 +6,5 @@ const PowerSchema = new Schema({
     createdAt:String
 });
 
-const PowerPost = mongoose.model('1minkeep',PowerSchema);
+const PowerPost = mongoose.model('10minkeep',PowerSchema);
 module.exports=PowerPost
