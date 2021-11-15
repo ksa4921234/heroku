@@ -32,7 +32,8 @@ app.get('/10min', async(req, res) => {
     const oneminPowerPosts = await PowerPost.find({})
     var tenminsPowerPosts = 0
     for(var i =0 ; i < oneminPowerPosts.length ; i++){
-        tenminsPowerPosts=tenminsPowerPosts + oneminPowerPosts[i].WATT
+        tenminsPowerPosts=tenminsPowerPosts + oneminPowerPosts[i].功率
+        console.log(oneminPowerPosts[i].createdAt)
     }
     tenminsPowerPosts = tenminsPowerPosts/oneminPowerPosts.length
     res.render('10min',{
