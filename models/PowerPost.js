@@ -9,4 +9,5 @@ const PowerSchema = new Schema({
 });
 
 const PowerPost = mongoose.model('10minkeep',PowerSchema);
+
 module.exports=PowerPost
