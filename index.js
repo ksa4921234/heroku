@@ -24,8 +24,23 @@ app.use(express.urlencoded())
 
 app.get('/', async(req, res) => {
     const oneminPowerPosts = await PowerPost.find({})
+    var wattarray = [];
+    var datearray = [];
+    for(var i =oneminPowerPosts.length-5;i<oneminPowerPosts.length;i++){
+        wattarray.push(oneminPowerPosts[i].功率);
+        datearray.push((oneminPowerPosts[i].createdAt.getYear()+1900)+"-"
+        +(oneminPowerPosts[i].createdAt.getMonth()+1)+"-"
+        +oneminPowerPosts[i].createdAt.getDate()+" "
+        +oneminPowerPosts[i].createdAt.getHours()+":"
+        +oneminPowerPosts[i].createdAt.getMinutes()+":"
+        +oneminPowerPosts[i].createdAt.getSeconds())
+    }
+    wattarray = JSON.stringify(wattarray);
+    datearray = JSON.stringify(datearray);
     res.render('index',{
-        oneminPowerPosts:oneminPowerPosts
+        oneminPowerPosts:oneminPowerPosts,
+        wattarray:wattarray,
+        datearray:datearray
     });
 })
 

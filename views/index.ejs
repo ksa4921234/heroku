@@ -19,7 +19,9 @@
     </header>
     <div class="Plot">
         <h1>Plot(This is not true value of plot,just test)</h1>
-        <div id="myChart"></div>
+        <!-- <div id='myDiv'></div> -->
+        <canvas id="myChart"></canvas>
+
     </div>
     <div class="Side">
         <div class="Digital" id="value">
@@ -27,8 +29,7 @@
             <% if (oneminPowerPosts.length>1) {%>
             <div>
                 <h3 id="Watt-Text">Watt : </h3>
-                <h5 id="Watt-Value"><%var WATT =JSON.parse(oneminPowerPosts[oneminPowerPosts.length-1].功率)%>
-                    <%=WATT%></h5>
+                <h5 id="Watt-Value"><%var watt = JSON.parse(wattarray)%><%=watt[watt.length-1]%></h5>
                 <h5 id="Watt-Unit">kW</h5>
             </div>
             <div>
@@ -37,17 +38,8 @@
                 <h5 id="voltage-Unit">v</h5>
             </div>
             <div>
-                <h5 id="Time-Value">
-                    <%var years = oneminPowerPosts[oneminPowerPosts.length-1].createdAt.getYear()+1900%>
-                    <%var month = (oneminPowerPosts[oneminPowerPosts.length-1].createdAt.getMonth()+1)%>
-                    <%var day = oneminPowerPosts[oneminPowerPosts.length-1].createdAt.getDate()%>
-                    <%var hours = oneminPowerPosts[oneminPowerPosts.length-1].createdAt.getHours()%>
-                    <%var mins = oneminPowerPosts[oneminPowerPosts.length-1].createdAt.getMinutes()%>
-                    <%var secs = oneminPowerPosts[oneminPowerPosts.length-1].createdAt.getSeconds()%>
-                    <%=month%>-<%=day%> <%=hours%>時<%=mins%>分<%=secs%>秒
-                </h5>
+                <h5 id="Time-Value"><%var date = JSON.parse(datearray)%><%=date[date.length-1]%></h5>
             </div>
-            <var id="date" style="visibility: hidden;"><%=years%>-<%=month%>-<%=day%> <%=hours%>:<%=mins%>:<%=secs%></var>
         </div>
         <% } %>
         <!-- <div class="Control">
@@ -68,28 +60,68 @@
             // $("#value").load("https://murmuring-temple-18681.herokuapp.com/" + " #value");
             $("#value").load("http://localhost:4000/" + " #value");
         }, 10000);
-        let Watt = document.getElementById('Watt-Value').innerText;
-        let date = document.getElementById('date').innerHTML;
+        var Watt = document.getElementById('Watt-Value').innerHTML;
+        var Dates = document.getElementById('Time-Value').innerHTML;
+        var ctx = document.getElementById('myChart');
         var xdata = [];
         var ydata = [];
-        var data = [{
-            x: xdata,
-            y: ydata,
-            type: 'scatter'
-        }];
-        Plotly.newPlot('myChart', data);
-        var Timer = setInterval(function () {
-            Watt = document.getElementById('Watt-Value').innerText;
-            date = document.getElementById('date').innerHTML;
-            updateData();
-            console.log(xdata);
-            console.log(ydata);
-            Plotly.newPlot('myChart', data);
-        }, 10000)
+        xdata = "<%-date%>".split(",");
+        ydata = "<%-watt%>".split(",");
+        ydata = ydata.map(Number);
+        console.log(xdata);
+        console.log(ydata);
 
-        function updateData() {
-            ydata.push(Watt)
-            xdata.push(date)
+        var myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: xdata,
+                datasets: [{
+                    label: '用電量(kW)',
+                    data: ydata,
+                    backgroundColor: 'rgba(111, 163, 204, 0.5)',
+                    borderColor: '#6FA3CC',
+                    scales: {
+                        yAxes: [{
+                            display: true,
+                            ticks: {
+                                suggestedMin: 0,
+                                suggestedMax: 6,
+                                beginAtZero: true
+                            }
+                        }]
+                    }
+                }]
+            }
+        });
+        myChart;
+        // var data = [{
+        //     x: xdata,
+        //     y: ydata,
+        //     type: "free"
+        // }];
+
+        // Plotly.newPlot('myDiv', data);
+
+        var Timer = setInterval(function () {
+            Watt = document.getElementById('Watt-Value').innerHTML;
+            Dates = document.getElementById('Time-Value').innerHTML;
+            if (xdata[xdata.length - 1] != Dates) {
+                updateData(myChart, Watt, Dates);
+                // updateData(Watt, Dates);
+                console.log(xdata);
+                console.log(ydata);
+            }
+
+        }, 1000)
+
+        function updateData(chart,watt, date) {
+            ydata.push(watt);
+            xdata.push(date);
+            ydata = ydata.map(Number);
+            ydata.shift();
+            xdata.shift();
+            chart.update();
+            // Plotly.newPlot('myDiv', data);
         }
     </script>
 </body>
