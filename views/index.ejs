@@ -21,7 +21,6 @@
         <h1>Plot(This is not true value of plot,just test)</h1>
         <!-- <div id='myDiv'></div> -->
         <canvas id="myChart"></canvas>
-
     </div>
     <div class="Side">
         <div class="Digital" id="value">
@@ -38,7 +37,7 @@
                 <h5 id="voltage-Unit">v</h5>
             </div>
             <div>
-                <h5 id="Time-Value"><%var date = JSON.parse(datearray)%><%=date[date.length-1]%></h5>
+                <h3 id="Time-Value"><%var date = JSON.parse(datearray)%><%=date[date.length-1]%></h3>
             </div>
         </div>
         <% } %>
@@ -57,7 +56,7 @@
     <!-- <script language="JavaScript" type="text/javascript" src="public/js/plot.js"></script> -->
     <script>
         setInterval(() => {
-            // $("#value").load("https://murmuring-temple-18681.herokuapp.com/" + " #value");
+            $("#value").load("https://murmuring-temple-18681.herokuapp.com/" + " #value");
             $("#value").load("http://localhost:4000/" + " #value");
         }, 10000);
         var Watt = document.getElementById('Watt-Value').innerHTML;
@@ -67,11 +66,8 @@
         var ydata = [];
         xdata = "<%-date%>".split(",");
         ydata = "<%-watt%>".split(",");
-        ydata = ydata.map(Number);
-        console.log(xdata);
-        console.log(ydata);
 
-        var myChart = new Chart(ctx, {
+        var MyChart = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: xdata,
@@ -85,7 +81,7 @@
                             display: true,
                             ticks: {
                                 suggestedMin: 0,
-                                suggestedMax: 6,
+                                suggestedMax: 5,
                                 beginAtZero: true
                             }
                         }]
@@ -93,7 +89,7 @@
                 }]
             }
         });
-        myChart;
+        MyChart;
         // var data = [{
         //     x: xdata,
         //     y: ydata,
@@ -106,18 +102,14 @@
             Watt = document.getElementById('Watt-Value').innerHTML;
             Dates = document.getElementById('Time-Value').innerHTML;
             if (xdata[xdata.length - 1] != Dates) {
-                updateData(myChart, Watt, Dates);
+                updateData(MyChart, Watt, Dates)
                 // updateData(Watt, Dates);
-                console.log(xdata);
-                console.log(ydata);
             }
-
         }, 1000)
 
-        function updateData(chart,watt, date) {
+        function updateData(chart, watt, date) {
             ydata.push(watt);
             xdata.push(date);
-            ydata = ydata.map(Number);
             ydata.shift();
             xdata.shift();
             chart.update();
