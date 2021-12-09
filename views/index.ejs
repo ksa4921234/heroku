@@ -4,6 +4,7 @@
 <%- include('layouts/header');-%>
 <script src='/socket.io/socket.io.js'></script>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+
 <body>
     <%- include('layouts/navbar');-%>
     <header class="masthead" style="background-image: url('public/img/fnq84z84y54uax0pt9oi.jpg');">
@@ -40,18 +41,15 @@
                 <h3 id="Time-Value"><%var date = JSON.parse(datearray)%><%=date[date.length-1]%></h3>
             </div>
             <% }else{ %>
-                <h1>No Data now!</h1>
+            <h1>No Data now!</h1>
         </div>
         <% } %>
-        <div class="Control">
-            <h1>Control</h1>
-            <div>
-
-            </div>
-            <div>
-                <button id="Btnon" >on</button>
-                <button id="BtnOff" >Off</button>
-            </div>
+    </div>
+    <div class="Control">
+        <h1>Control</h1>
+        <div>
+            <button id="Btnon" class="On" >on</button>
+            <button id="BtnOff" class="Off" >Off</button>
         </div>
     </div>
     <%-include('layouts/footer');-%>
@@ -62,7 +60,7 @@
         var socket = io.connect();
         setInterval(() => {
             $("#value").load("https://murmuring-temple-18681.herokuapp.com/" + " #value");
-            $("#value").load("http://localhost:4000/" + " #value");
+            // $("#value").load("http://localhost:4000/" + " #value");
         }, 10000);
         var Watt = document.getElementById('Watt-Value').innerHTML;
         var Dates = document.getElementById('Time-Value').innerHTML;

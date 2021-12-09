@@ -9,10 +9,10 @@ var mqtt = require('mqtt')
 var io = require('socket.io')(http);
 
 
-let port = process.env.PORT;
+let Port = process.env.PORT;
 
-if (port == null || port == "") {
-    port = 4000;
+if (Port == null || Port == "") {
+    Port = 4000;
 }
 
 mongoose.connect('mongodb+srv://user1:user1@cluster0.jc6do.mongodb.net/EM330?retryWrites=true&w=majority', {
@@ -71,7 +71,7 @@ client.on('connect', function () {
     client.subscribe('/EM330/shelly/25/on');
 });
 
-var http = app.listen(port, () => {
+var http = app.listen(Port, () => {
     console.log("App listening on port 4000")
 })
 var sio = io.listen(http);
