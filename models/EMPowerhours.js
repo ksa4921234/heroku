@@ -3,10 +3,9 @@ const Schema = mongoose.Schema
 
 const PowerSchema = new Schema({
     功率: Number,
-    電壓: Number,
     createdAt: Date
 });
 
-const PowerPost = mongoose.model('shelly25/nows',PowerSchema);
+const EMPowerhour = mongoose.model('shellyem/hours',PowerSchema);
 
-module.exports=PowerPost
+module.exports=EMPowerhour

@@ -3,7 +3,12 @@ const path = require('path');
 const app = new express();
 const ejs = require('ejs');
 const mongoose = require('mongoose');
-const PowerPost = require('./models/PowerPost.js')
+
+const EMPowernow = require('./models/EMPowernow.js')
+const EMPowertenmin = require('./models/EMPowertemin')
+const EMPowerhour = require('./models/EMPowerhours')
+const EMPowerday = require('./models/EMPowerdays.js')
+
 var $ = require("jquery");
 var mqtt = require('mqtt')
 var io = require('socket.io')(http);
@@ -25,35 +30,31 @@ app.use(express.json())
 app.use(express.urlencoded())
 
 app.get('/', async (req, res) => {
-    const oneminPowerPosts = await PowerPost.find({})
-    var wattarray = [];
-    var datearray = [];
-    if (oneminPowerPosts.length > 1) {
-        for (var i = oneminPowerPosts.length - 5; i < oneminPowerPosts.length; i++) {
-            wattarray.push(oneminPowerPosts[i].功率);
-            datearray.push((oneminPowerPosts[i].createdAt.getYear() + 1900) + "-" +
-                (oneminPowerPosts[i].createdAt.getMonth() + 1) + "-" +
-                oneminPowerPosts[i].createdAt.getDate() + " " +
-                oneminPowerPosts[i].createdAt.getHours() + ":" +
-                oneminPowerPosts[i].createdAt.getMinutes() + ":" +
-                oneminPowerPosts[i].createdAt.getSeconds())
-        }
-        wattarray = JSON.stringify(wattarray);
-        datearray = JSON.stringify(datearray);
-        res.render('index', {
-            oneminPowerPosts: oneminPowerPosts,
-            wattarray: wattarray,
-            datearray: datearray
-        });
-    }else{
-        res.render('index', {
-            oneminPowerPosts: oneminPowerPosts,
-            wattarray: wattarray,
-            datearray: datearray
-        });
+    const EMPowernows = await EMPowernow.find({})
+    const EMPowertenmins = await EMPowertenmin.find({})
+    const EMPowerhours = await EMPowerhour.find({})
+    const EMPowerdays = await EMPowerday.find({})
+    var nowwatt = EMPowernows[EMPowernows.length - 1].功率;
+    var nowdate =
+        EMPowernows[EMPowernows.length - 1].createdAt.getHours() + ":" +
+        EMPowernows[EMPowernows.length - 1].createdAt.getMinutes();
+    var tenminswatt = [];
+    var tenminsdate = [];
+    for (i = EMPowertenmins.length - 7; i < EMPowertenmins.length; i++) {
+        tenminswatt.push(EMPowertenmins[i].十分鐘平均功率);
+        tenminsdate.push(EMPowertenmins[i].createdAt.getHours() + ":" +
+            EMPowertenmins[i].createdAt.getMinutes());
     }
-
-
+    tenminswatt = JSON.stringify(tenminswatt);
+    tenminsdate = JSON.stringify(tenminsdate);
+    res.render('index2', {
+        EMPowernow: EMPowernows,
+        nowwatt: nowwatt,
+        nowdate: nowdate,
+        EMPowertenmin: EMPowertenmins,
+        tenminswatt: tenminswatt,
+        tenminsdate: tenminsdate
+    });
 })
 
 var opt = {
@@ -76,19 +77,21 @@ var http = app.listen(Port, () => {
 var sio = io.listen(http);
 
 sio.sockets.on('connection', function (socket) {
-    socket.on('on', function (value) {
-        sss = value;
-        console.log(value);
-        var aaa = sss.toString();
+    socket.on('25on', function () {
         // client.publish('/EM330/shelly/25/on', aaa)
-        client.publish('/EM330/sensibo/on', aaa)
+        client.publish('/EM330/shelly/25/on', 'on')
     });
 
-    socket.on('off', function (value) {
-        sss = value;
-        console.log(value);
-        var aaa = sss.toString();
+    socket.on('25off', function () {
         // client.publish('/EM330/shelly/25/off', aaa)
-        client.publish('/EM330/sensibo/off', aaa)
+        client.publish('/EM330/shelly/25/off', 'on')
     });
 });
+
+
+
+
+
+// (EMPowernows[EMPowernows.length - 1].createdAt.getYear() + 1900) + "-" +
+//         (EMPowernows[EMPowernows.length - 1].createdAt.getMonth() + 1) + "-" +
+//         EMPowernows[EMPowernows.length - 1].createdAt.getDate() + " " ;
