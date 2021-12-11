@@ -26,7 +26,7 @@
     <div class="Side">
         <div class="Digital" id="value">
             <h1>Now</h1>
-            <% if (oneminPowerPosts.length>1) {%>
+            <% if (oneminPowerPosts.length>5) {%>
             <div>
                 <h3 id="Watt-Text">Watt : </h3>
                 <h5 id="Watt-Value"><%var watt = JSON.parse(wattarray)%><%=watt[watt.length-1]%></h5>
@@ -40,22 +40,23 @@
             <div>
                 <h3 id="Time-Value"><%var date = JSON.parse(datearray)%><%=date[date.length-1]%></h3>
             </div>
-            <% }else{ %>
+            <% } else { %>
             <h1>No Data now!</h1>
+            <% } %>
         </div>
-        <% } %>
-    </div>
-    <div class="Control">
-        <h1>Control</h1>
-        <div>
-            <button id="Btnon" >on</button>
-            <button id="BtnOff">Off</button>
+        <div class="Control">
+            <h1>Control</h1>
+            <div>
+                <button id="BtnOn" >on</button>
+                <button id="BtnOff">Off</button>
+            </div>
         </div>
     </div>
+
     <%-include('layouts/footer');-%>
     <%-include('layouts/scripts');-%>
     <script>
-        const btnon = document.getElementById('Btnon')
+        const btnon = document.getElementById('BtnOn')
         const btnoff = document.getElementById('BtnOff')
         var socket = io.connect();
         setInterval(() => {
