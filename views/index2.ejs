@@ -166,7 +166,7 @@
     minutesdata = [EMtenminswatt, TFtenminswatt, ACHumarray];
 
     setInterval(() => {
-        if(EMtenminswatt[EMtenminswatt.length-1]!=document.getElementById('EMtenminwatt').innerHTML){
+        if(minutes_text[minutes_text.length-1]!=document.getElementById('EMtenmindate').innerHTML){
         EMtenminswatt.push(document.getElementById('EMtenminwatt').innerHTML);
         TFtenminswatt.push(document.getElementById('TFtenminwatt').innerHTML);
         ACHumarray.push(document.getElementById('ACtenminwatt').innerHTML);
