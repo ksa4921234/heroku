@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema
 
 const PowerSchema = new Schema({
-    功率: Number,
+    小時平均功率: Number,
     createdAt: Date
 });
 

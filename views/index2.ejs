@@ -28,13 +28,13 @@
                         <div class="select-text">檢視電錶:</div>
                         <input type="checkbox" id="shelly1" class="shelly-button" autocomplete="off" name="shelly_check"
                             checked=true>
-                        <label id="shelly1_lb" for="shelly1" onclick="shelly_check(this,0)">Shelly1</label>
+                        <label id="shelly1_lb" for="shelly1" onclick="shelly_check(this,0)">ShellyEM</label>
                         <input type="checkbox" id="shelly2" class="shelly-button" autocomplete="off"
                             name="shelly_check">
-                        <label id="shelly2_lb" for="shelly2" onclick="shelly_check(this,1)">Shelly2</label>
+                        <label id="shelly2_lb" for="shelly2" onclick="shelly_check(this,1)">Shelly25</label>
                         <input type="checkbox" id="shelly3" class="shelly-button" autocomplete="off"
                             name="shelly_check">
-                        <label id="shelly3_lb" for="shelly3" onclick="shelly_check(this,2)">Shelly3</label>
+                        <label id="shelly3_lb" for="shelly3" onclick="shelly_check(this,2)">AC</label>
                     </div>
                     <div class="range_selection">
                         <div class="range-text">檢視範圍:</div>
@@ -46,10 +46,10 @@
                         <label id="daybefore_lb" for="daybefore" onclick="range_check(this,1)">過去一天</label>
                         <input type="checkbox" id="weekbefore" class="range-button" autocomplete="off"
                             name="range_check">
-                        <label id="weekbefore_lb" for="weekbefore" onclick="range_check(this,2)">過去一週</label>
+                        <!-- <label id="weekbefore_lb" for="weekbefore" onclick="range_check(this,2)">過去一週</label>
                         <input type="checkbox" id="monthbefore" class="range-button" autocomplete="off"
                             name="range_check">
-                        <label id="monthbefore_lb" for="monthbefore" onclick="range_check(this,3)">過去一月</label>
+                        <label id="monthbefore_lb" for="monthbefore" onclick="range_check(this,3)">過去一月</label> -->
                     </div>
                 </form>
             </div>
@@ -61,19 +61,41 @@
             <div class="Digital" id="value">
                 <div class="digital_text">當前用電量</div>
                 <div class="digital_content">
-                    <div class="watt">
+                    <div class="watt" id="EMwatt" style="display:flex">
                         <div class="watt_text">Watt</div>
-                        <div class="watt_value"><%=nowwatt%> kw</div>
+                        <div class="watt_value"><%=EMnowwatt%> w</div>
                     </div>
-                    <div class="voltage">
+                    <div class="watt" id="TFwatt" style="display:none;">
+                        <div class="watt_text">Watt</div>
+                        <div class="watt_value"><%=TFnowwatt%> w</div>
+                    </div>
+                    <div class="watt" id="ACtmp" style="display:none;">
+                        <div class="watt_text">溫度</div>
+                        <div class="watt_value"><%=ACtmps%> 度</div>
+                    </div>
+                    <div class="voltage" id="EMvoltage">
                         <div class="voltage_text">Voltage</div>
                         <div class="voltage_value"><%=EMPowernow[EMPowernow.length-1].電壓%>V</div>
+                    </div>
+                    <div class="voltage" id="AChum" style="display: none;">
+                        <div class="voltage_text">濕度</div>
+                        <div class="voltage_value"><%=AChums%> RH</div>
                     </div>
                 </div>
                 <div class="lasttime">
                     <div class="lasttime_text">上次更新 :</div>
-                    <div class="lasttime_value"><%=nowdate%><span class="cycle">(每20秒更新一次)</span></div>
+                    <div class="lasttime_value"><%=EMnowdate%><span class="cycle">(每20秒更新一次)</span></div>
                 </div>
+                <% var ejsEMtenminswatt = JSON.parse(EMtenminswatt);%>
+                <div style="visibility: hidden;" id="EMtenminwatt"><%=ejsEMtenminswatt[ejsEMtenminswatt.length-1]%></div>
+                <% var ejsEMtenminsdate = JSON.parse(EMtenminsdate);%>
+                <div style="visibility: hidden;" id="EMtenmindate"><%=ejsEMtenminsdate[ejsEMtenminsdate.length-1]%></div>
+
+                <% var ejsTFtenminswatt = JSON.parse(TFtenminswatt);%>
+                <div style="visibility: hidden;" id="TFtenminwatt"><%=ejsTFtenminswatt[ejsTFtenminswatt.length-1]%></div>
+
+                <% var ejsAChumarrays = JSON.parse(AChumarrays);%>
+                <div style="visibility: hidden;" id="ACtenminwatt"><%=ejsAChumarrays[ejsAChumarrays.length-1]%></div>
             </div>
             <div class="Control">
                 <div class="control_text">電源控制</div>
@@ -108,12 +130,8 @@
             </div>
         </div>
     </div>
-    <% var ejstenminswatt = JSON.parse(tenminswatt);%>
-    <div style="visibility: hidden;"><%=ejstenminswatt[ejstenminswatt-1]%></div>
-    <% var ejstenminsdate = JSON.parse(tenminsdate);%>
-    <div style="visibility: hidden;"><%=ejstenminsdate[ejstenminsdate-1]%></div>
-    <%-include('layouts/scripts');-%>
 </body>
+<%-include('layouts/scripts');-%>
 <script>
     const light = document.getElementById('light');
     setInterval(() => {
@@ -131,12 +149,41 @@
     var data3 = [];
     var data4 = [];
     var nulldata = [];
+    var EMtenminswatt = [],
+        EMhourswatt = [],
+        EMdayswatt = [],
+        TFtenminswatt = [],
+        TFhourswatt = [],
+        TFdayswatt = [],
+        ACHumarray = [];
+    var EMtenminsdate = [],
+        EMhoursdate = [],
+        EMdaysdate = [],
+
+        EMtenminswatt = "<%-ejsEMtenminswatt%>".split(",");
+    TFtenminswatt = "<%-ejsTFtenminswatt%>".split(",");
+    ACHumarray = "<%-ejsAChumarrays%>".split(",");
+    minutesdata = [EMtenminswatt, TFtenminswatt, ACHumarray];
+
+    setInterval(() => {
+        if(EMtenminswatt[EMtenminswatt.length-1]!=document.getElementById('EMtenminwatt').innerHTML){
+        EMtenminswatt.push(document.getElementById('EMtenminwatt').innerHTML);
+        TFtenminswatt.push(document.getElementById('TFtenminwatt').innerHTML);
+        ACHumarray.push(document.getElementById('ACtenminwatt').innerHTML);
+        EMtenminswatt.shift();
+        TFtenminswatt.shift();
+        ACHumarray.shift();
+        minutes_text.push(document.getElementById('EMtenmindate').innerHTML);
+        minutes_text.shift();
+        minutesdata = [EMtenminswatt, TFtenminswatt, ACHumarray];
+        myChart.update();
+        }
+    }, 1000);
+
     for (i = 0; i < 3; i++) {
-        data1 = [];
         data2 = [];
         data3 = [];
         data4 = [];
-        data1 = '<%=ejstenminswatt%>'.split(",");
         for (j = 0; j < 7; j++) //7days and onehours
         {
             data3.push(Math.floor(Math.random() * 16800));
@@ -149,7 +196,6 @@
         {
             data4.push(Math.floor(Math.random() * 67200));
         }
-        minutesdata.push(data1);
         hoursdata.push(data2);
         daysdata.push(data3);
         weeksdata.push(data4);
@@ -181,7 +227,7 @@
     window.shellyNum = 0;
     window.rangeNum = 0;
 
-    const minutes_text = '<%=ejstenminsdate%>'.split(",");
+    const minutes_text = '<%-ejsEMtenminsdate%>'.split(",");
     const hours_text = ['12AM', '1AM', '2AM', '3AM', '4AM', '5AM',
         '6AM', '7AM', '8AM', '9AM', '10AM', '11AM',
         '12PM', '1PM', '2PM', '3PM', '4PM', '5PM',
@@ -234,10 +280,29 @@
         checkbox1.forEach((item) => {
             if (item != checkbox) item.checked = false;
         })
-
-        if (num == 0) window.shellyNum = 0;
-        else if (num == 1) window.shellyNum = 1;
-        else window.shellyNum = 2;
+        console.log(checkbox)
+        if (num == 0) {
+            window.shellyNum = 0;
+            document.getElementById('EMwatt').style = 'display:flex';
+            document.getElementById('TFwatt').style = 'display:none';
+            document.getElementById('ACtmp').style = 'display:none';
+            document.getElementById('EMvoltage').style = 'display:flex';
+            document.getElementById('AChum').style = 'display:none';
+        } else if (num == 1) {
+            window.shellyNum = 1;
+            document.getElementById('EMwatt').style = 'display:none';
+            document.getElementById('TFwatt').style = 'display:flex';
+            document.getElementById('ACtmp').style = 'display:none';
+            document.getElementById('EMvoltage').style = 'display:flex';
+            document.getElementById('AChum').style = 'display:none';
+        } else {
+            window.shellyNum = 2;
+            document.getElementById('EMwatt').style = 'display:none';
+            document.getElementById('TFwatt').style = 'display:none';
+            document.getElementById('ACtmp').style = 'display:flex';
+            document.getElementById('EMvoltage').style = 'display:none';
+            document.getElementById('AChum').style = 'display:flex';
+        }
 
         setChart(window.shellyNum, window.rangeNum);
 

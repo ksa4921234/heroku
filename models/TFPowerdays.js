@@ -6,6 +6,6 @@ const PowerSchema = new Schema({
     createdAt: Date
 });
 
-const EMPowerday = mongoose.model('shellyem/days',PowerSchema);
+const TFPowerday = mongoose.model('shellytf/days',PowerSchema);
 
-module.exports=EMPowerday
+module.exports=TFPowerday

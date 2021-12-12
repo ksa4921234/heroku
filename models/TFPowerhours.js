@@ -2,10 +2,10 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema
 
 const PowerSchema = new Schema({
-    一天平均功率: Number,
+    小時平均功率: Number,
     createdAt: Date
 });
 
-const EMPowerday = mongoose.model('shellyem/days',PowerSchema);
+const TFPowerhour = mongoose.model('shellytf/hours',PowerSchema);
 
-module.exports=EMPowerday
+module.exports=TFPowerhour

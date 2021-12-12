@@ -5,10 +5,14 @@ const ejs = require('ejs');
 const mongoose = require('mongoose');
 
 const EMPowernow = require('./models/EMPowernow.js')
-const EMPowertenmin = require('./models/EMPowertemin')
-const EMPowerhour = require('./models/EMPowerhours')
+const EMPowertenmin = require('./models/EMPowertemin.js')
+const EMPowerhour = require('./models/EMPowerhours.js')
 const EMPowerday = require('./models/EMPowerdays.js')
-
+const TFPowernow = require('./models/TFPowernow.js')
+const TFPowertenmin = require('./models/TFPowertemin.js')
+const TFPowerhour = require('./models/TFPowerhours.js')
+const TFPowerday = require('./models/TFPowerdays.js')
+const ACPost = require('./models/ACPost.js')
 var $ = require("jquery");
 var mqtt = require('mqtt')
 var io = require('socket.io')(http);
@@ -34,26 +38,65 @@ app.get('/', async (req, res) => {
     const EMPowertenmins = await EMPowertenmin.find({})
     const EMPowerhours = await EMPowerhour.find({})
     const EMPowerdays = await EMPowerday.find({})
-    var nowwatt = EMPowernows[EMPowernows.length - 1].功率;
-    var nowdate =
+    const TFPowernows = await TFPowernow.find({})
+    const TFPowertenmins = await TFPowertenmin.find({})
+    const TFPowerhours = await TFPowerhour.find({})
+    const TFPowerdays = await TFPowerday.find({})
+    const ACPosts = await ACPost.find({})
+
+    var EMnowwatt = EMPowernows[EMPowernows.length - 1].功率;
+    var EMnowdate =
         EMPowernows[EMPowernows.length - 1].createdAt.getHours() + ":" +
         EMPowernows[EMPowernows.length - 1].createdAt.getMinutes();
-    var tenminswatt = [];
-    var tenminsdate = [];
+    var EMtenminswatts = [];
+    var EMtenminsdates = [];
     for (i = EMPowertenmins.length - 7; i < EMPowertenmins.length; i++) {
-        tenminswatt.push(EMPowertenmins[i].十分鐘平均功率);
-        tenminsdate.push(EMPowertenmins[i].createdAt.getHours() + ":" +
+        EMtenminswatts.push(EMPowertenmins[i].十分鐘平均功率);
+        EMtenminsdates.push(EMPowertenmins[i].createdAt.getHours() + ":" +
             EMPowertenmins[i].createdAt.getMinutes());
     }
-    tenminswatt = JSON.stringify(tenminswatt);
-    tenminsdate = JSON.stringify(tenminsdate);
+    EMtenminswatts = JSON.stringify(EMtenminswatts);
+    EMtenminsdates = JSON.stringify(EMtenminsdates);
+
+    var TFnowwatt = TFPowernows[TFPowernows.length - 1].功率;
+    var TFnowdate =
+        TFPowernows[TFPowernows.length - 1].createdAt.getHours() + ":" +
+        TFPowernows[TFPowernows.length - 1].createdAt.getMinutes();
+    var TFtenminswatts = [];
+    var TFtenminsdates = [];
+    for (i = TFPowertenmins.length - 7; i < TFPowertenmins.length; i++) {
+        TFtenminswatts.push(TFPowertenmins[i].十分鐘平均功率);
+    }
+    TFtenminswatts = JSON.stringify(TFtenminswatts);
+
+    var ACtmp = ACPosts[ACPosts.length - 1].溫度;
+    var AChum = ACPosts[ACPosts.length - 1].濕度;
+    var AChumarray = [];
+    var ACnowdate =
+        ACPosts[ACPosts.length - 1].createdAt.getHours() + ":" +
+        ACPosts[ACPosts.length - 1].createdAt.getMinutes();
+        for (i = ACPosts.length - 7; i < ACPosts.length; i++) {
+            AChumarray.push(ACPosts[i].濕度);
+        }
+    AChumarray = JSON.stringify(AChumarray);
     res.render('index2', {
         EMPowernow: EMPowernows,
-        nowwatt: nowwatt,
-        nowdate: nowdate,
+        EMnowwatt: EMnowwatt,
+        EMnowdate: EMnowdate,
         EMPowertenmin: EMPowertenmins,
-        tenminswatt: tenminswatt,
-        tenminsdate: tenminsdate
+        EMtenminswatt: EMtenminswatts,
+        EMtenminsdate: EMtenminsdates,
+
+        TFPowernow: TFPowernows,
+        TFnowwatt: TFnowwatt,
+        TFnowdate: TFnowdate,
+        TFPowertenmin: TFPowertenmins,
+        TFtenminswatt: TFtenminswatts,
+
+        ACtmps:ACtmp,
+        AChums:AChum,
+        AChumarrays:AChumarray,
+        ACnowdates:ACnowdate
     });
 })
 
@@ -65,10 +108,10 @@ var opt = {
 var client = mqtt.connect('mqtt://broker.emqx.io', opt);
 
 client.on('connect', function () {
-    client.subscribe('/EM330/shelly/25/on');
-    client.subscribe('/EM330/shelly/25/off');
-    client.subscribe('/EM330/sensibo/on');
-    client.subscribe('/EM330/sensibo/off');
+    client.subscribe('/EM330/shelly25/on');
+    client.subscribe('/EM330/shelly25/off');
+    client.subscribe('/EM330/sensibo/ON');
+    client.subscribe('/EM330/sensibo/OFF');
 });
 
 var http = app.listen(Port, () => {
@@ -78,13 +121,17 @@ var sio = io.listen(http);
 
 sio.sockets.on('connection', function (socket) {
     socket.on('25on', function () {
-        // client.publish('/EM330/shelly/25/on', aaa)
-        client.publish('/EM330/shelly/25/on', 'on')
+        client.publish('/EM330/shelly25/on', 'on')
+    });
+    socket.on('25off', function () {
+        client.publish('/EM330/shelly25/off', 'off')
+    });
+    socket.on('ACon', function () {
+        client.publish('/EM330/sensibo/ON', 'on')
     });
 
-    socket.on('25off', function () {
-        // client.publish('/EM330/shelly/25/off', aaa)
-        client.publish('/EM330/shelly/25/off', 'on')
+    socket.on('ACoff', function () {
+        client.publish('/EM330/sensibo/OFF', 'off')
     });
 });
 
