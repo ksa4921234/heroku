@@ -330,11 +330,15 @@
             document.getElementById(obj.id).innerText = "ON";
             if (btnid == "light") {
                 socket.emit('25on');
+            }else if(btnid == "airconditioner"){
+                socket.emit('ACon');
             }
         } else {
             document.getElementById(obj.id).innerText = "OFF";
             if (btnid == "light") {
                 socket.emit('25off');
+            }else if(btnid == "airconditioner"){
+                socket.emit('ACoff');
             }
         }
     }

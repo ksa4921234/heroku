@@ -164,11 +164,11 @@ sio.sockets.on('connection', function (socket) {
         client.publish('/EM330/shelly25/off', 'off')
     });
     socket.on('ACon', function () {
-        client.publish('/EM330/sensibo/ON', 'on')
+        client.publish('/EM330/sensibo/ON')
     });
 
     socket.on('ACoff', function () {
-        client.publish('/EM330/sensibo/OFF', 'off')
+        client.publish('/EM330/sensibo/OFF')
     });
     socket.on('btnSW', function (num) {
         sendflag = num;
