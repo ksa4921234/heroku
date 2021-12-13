@@ -14,7 +14,10 @@ const TFPowerhour = require('./models/TFPowerhours.js')
 const TFPowerday = require('./models/TFPowerdays.js')
 const ACPost = require('./models/ACPost.js')
 var $ = require("jquery");
-var mqtt = require('mqtt')
+var mqtt = require('mqtt');
+const {
+    Socket
+} = require('socket.io');
 var io = require('socket.io')(http);
 
 
@@ -45,6 +48,7 @@ app.get('/', async (req, res) => {
     const ACPosts = await ACPost.find({})
 
     var EMnowwatt = EMPowernows[EMPowernows.length - 1].功率;
+    var EMnowvolt = EMPowernows[EMPowernows.length - 1].電壓;
     var EMnowdate =
         EMPowernows[EMPowernows.length - 1].createdAt.getHours() + ":" +
         EMPowernows[EMPowernows.length - 1].createdAt.getMinutes();
@@ -75,10 +79,35 @@ app.get('/', async (req, res) => {
     var ACnowdate =
         ACPosts[ACPosts.length - 1].createdAt.getHours() + ":" +
         ACPosts[ACPosts.length - 1].createdAt.getMinutes();
-        for (i = ACPosts.length - 7; i < ACPosts.length; i++) {
-            AChumarray.push(ACPosts[i].濕度);
-        }
+    for (i = ACPosts.length - 7; i < ACPosts.length; i++) {
+        AChumarray.push(ACPosts[i].濕度);
+    };
     AChumarray = JSON.stringify(AChumarray);
+    var nowsendfirst,
+        nowsendsec,
+        nowsendthird,
+        nowsendfour,
+        nowsendfive;
+    if (sendflag == 0) {
+        nowsendfirst = "當前用電量";
+        nowsendsec = "Watt";
+        nowsendthird = EMnowwatt + " w";
+        nowsendfour = "Voltage";
+        nowsendfive = EMnowvolt + " V";
+    } else if (sendflag == 1) {
+        nowsendfirst = "當前用電量";
+        nowsendsec = "Watt";
+        nowsendthird = TFnowwatt + " w";
+        nowsendfour = "Voltage";
+        nowsendfive = EMnowvolt + " V";
+    } else if (sendflag == 2) {
+        nowsendfirst = "當前冷氣狀態";
+        nowsendsec = "溫度";
+        nowsendthird = ACtmp + " 度";
+        nowsendfour = "濕度";
+        nowsendfive = AChum + " %";
+    }
+    
     res.render('index2', {
         EMPowernow: EMPowernows,
         EMnowwatt: EMnowwatt,
@@ -93,10 +122,16 @@ app.get('/', async (req, res) => {
         TFPowertenmin: TFPowertenmins,
         TFtenminswatt: TFtenminswatts,
 
-        ACtmps:ACtmp,
-        AChums:AChum,
-        AChumarrays:AChumarray,
-        ACnowdates:ACnowdate
+        ACtmps: ACtmp,
+        AChums: AChum,
+        AChumarrays: AChumarray,
+        ACnowdates: ACnowdate,
+
+        nowsendfirsts:nowsendfirst,
+        nowsendsecs:nowsendsec,
+        nowsendthirds:nowsendthird,
+        nowsendfours:nowsendfour,
+        nowsendfives:nowsendfive
     });
 })
 
@@ -119,6 +154,8 @@ var http = app.listen(Port, () => {
 })
 var sio = io.listen(http);
 
+var sendflag = 0;
+
 sio.sockets.on('connection', function (socket) {
     socket.on('25on', function () {
         client.publish('/EM330/shelly25/on', 'on')
@@ -133,6 +170,9 @@ sio.sockets.on('connection', function (socket) {
     socket.on('ACoff', function () {
         client.publish('/EM330/sensibo/OFF', 'off')
     });
+    socket.on('btnSW', function (num) {
+        sendflag = num;
+    })
 });
 
 

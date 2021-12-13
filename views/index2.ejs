@@ -59,27 +59,15 @@
         </div>
         <div class="Side">
             <div class="Digital" id="value">
-                <div class="digital_text">當前用電量</div>
+                <div class="digital_text"><%=nowsendfirsts%></div>
                 <div class="digital_content">
                     <div class="watt" id="EMwatt" style="display:flex">
-                        <div class="watt_text">Watt</div>
-                        <div class="watt_value"><%=EMnowwatt%> w</div>
-                    </div>
-                    <div class="watt" id="TFwatt" style="display:none;">
-                        <div class="watt_text">Watt</div>
-                        <div class="watt_value"><%=TFnowwatt%> w</div>
-                    </div>
-                    <div class="watt" id="ACtmp" style="display:none;">
-                        <div class="watt_text">溫度</div>
-                        <div class="watt_value"><%=ACtmps%> 度</div>
+                        <div class="watt_text"><%=nowsendsecs%></div>
+                        <div class="watt_value"><%=nowsendthirds%></div>
                     </div>
                     <div class="voltage" id="EMvoltage">
-                        <div class="voltage_text">Voltage</div>
-                        <div class="voltage_value"><%=EMPowernow[EMPowernow.length-1].電壓%>V</div>
-                    </div>
-                    <div class="voltage" id="AChum" style="display: none;">
-                        <div class="voltage_text">濕度</div>
-                        <div class="voltage_value"><%=AChums%> RH</div>
+                        <div class="voltage_text"><%=nowsendfours%></div>
+                        <div class="voltage_value"><%=nowsendfives%></div>
                     </div>
                 </div>
                 <div class="lasttime">
@@ -109,7 +97,7 @@
                                 onclick="btncontrol(this,'airconditioner')">OFF</label>
                         </div>
                     </div>
-                    <div class="switch_content2">
+                    <div class="switch_content2" style="visibility: hidden;">
                         <div class="switch_text">電風扇</div>
                         <div class="switch">
                             <input type="checkbox" id="electricfan" class="switch_button" autocomplete="off"
@@ -158,25 +146,26 @@
         ACHumarray = [];
     var EMtenminsdate = [],
         EMhoursdate = [],
-        EMdaysdate = [],
-
-        EMtenminswatt = "<%-ejsEMtenminswatt%>".split(",");
+        EMdaysdate = [];
+    EMtenminswatt = "<%-ejsEMtenminswatt%>".split(",");
     TFtenminswatt = "<%-ejsTFtenminswatt%>".split(",");
     ACHumarray = "<%-ejsAChumarrays%>".split(",");
     minutesdata = [EMtenminswatt, TFtenminswatt, ACHumarray];
 
     setInterval(() => {
-        if(minutes_text[minutes_text.length-1]!=document.getElementById('EMtenmindate').innerHTML){
-        EMtenminswatt.push(document.getElementById('EMtenminwatt').innerHTML);
-        TFtenminswatt.push(document.getElementById('TFtenminwatt').innerHTML);
-        ACHumarray.push(document.getElementById('ACtenminwatt').innerHTML);
-        EMtenminswatt.shift();
-        TFtenminswatt.shift();
-        ACHumarray.shift();
-        minutes_text.push(document.getElementById('EMtenmindate').innerHTML);
-        minutes_text.shift();
-        minutesdata = [EMtenminswatt, TFtenminswatt, ACHumarray];
-        myChart.update();
+        if (minutes_text[minutes_text.length - 1] != document.getElementById('EMtenmindate').innerHTML) {
+            console.log(minutes_text[minutes_text.length - 1]);
+            console.log(document.getElementById('EMtenmindate').innerHTML);
+            EMtenminswatt.push(document.getElementById('EMtenminwatt').innerHTML);
+            TFtenminswatt.push(document.getElementById('TFtenminwatt').innerHTML);
+            ACHumarray.push(document.getElementById('ACtenminwatt').innerHTML);
+            EMtenminswatt.shift();
+            TFtenminswatt.shift();
+            ACHumarray.shift();
+            minutes_text.push(document.getElementById('EMtenmindate').innerHTML);
+            minutes_text.shift();
+            minutesdata = [EMtenminswatt, TFtenminswatt, ACHumarray];
+            myChart.update();
         }
     }, 1000);
 
@@ -228,6 +217,7 @@
     window.rangeNum = 0;
 
     const minutes_text = '<%-ejsEMtenminsdate%>'.split(",");
+
     const hours_text = ['12AM', '1AM', '2AM', '3AM', '4AM', '5AM',
         '6AM', '7AM', '8AM', '9AM', '10AM', '11AM',
         '12PM', '1PM', '2PM', '3PM', '4PM', '5PM',
@@ -239,6 +229,7 @@
 
     window.Datas = Shelly1_Datas.minutes;
 
+    var chartlabel = '平均用電';
     // 初始化 Chart
     var ctx = document.getElementById("chartPlot");
     var myChart = new Chart(ctx, {
@@ -246,7 +237,7 @@
         data: {
             labels: window.chartLabels,
             datasets: [{
-                label: '用電量(kW)',
+                label: chartlabel,
                 data: window.Datas,
                 backgroundColor: 'rgba(111, 163, 204, 0.5)',
                 borderColor: '#6FA3CC',
@@ -268,11 +259,6 @@
         }
     });
 
-    // Timer for Update
-    // var Timer = setInterval(function() {
-    //         updateData(myChart,Math.floor(Math.random() * 100
-    //     ))},5000);
-
     // Change power watch ( shelly ) 
     function shelly_check(checkbox, num) {
         // single selection
@@ -280,32 +266,20 @@
         checkbox1.forEach((item) => {
             if (item != checkbox) item.checked = false;
         })
-        console.log(checkbox)
+        socket.emit('btnSW',num);
+        // $("#value").load("http://localhost:4000/" + " #value");
+        $("#value").load("https://murmuring-temple-18681.herokuapp.com/" + " #value");
         if (num == 0) {
             window.shellyNum = 0;
-            document.getElementById('EMwatt').style = 'display:flex';
-            document.getElementById('TFwatt').style = 'display:none';
-            document.getElementById('ACtmp').style = 'display:none';
-            document.getElementById('EMvoltage').style = 'display:flex';
-            document.getElementById('AChum').style = 'display:none';
+            chartlabel = '平均用電';
         } else if (num == 1) {
             window.shellyNum = 1;
-            document.getElementById('EMwatt').style = 'display:none';
-            document.getElementById('TFwatt').style = 'display:flex';
-            document.getElementById('ACtmp').style = 'display:none';
-            document.getElementById('EMvoltage').style = 'display:flex';
-            document.getElementById('AChum').style = 'display:none';
+            chartlabel = '平均用電';
         } else {
             window.shellyNum = 2;
-            document.getElementById('EMwatt').style = 'display:none';
-            document.getElementById('TFwatt').style = 'display:none';
-            document.getElementById('ACtmp').style = 'display:flex';
-            document.getElementById('EMvoltage').style = 'display:none';
-            document.getElementById('AChum').style = 'display:flex';
+            chartlabel = "平均濕度"
         }
-
         setChart(window.shellyNum, window.rangeNum);
-
         myChart.update();
     }
 
@@ -347,12 +321,6 @@
             else window.Datas = Shelly3_Datas.weeks;
         }
         myChart.data.datasets[0].data = window.Datas;
-    }
-
-    // update chart
-    function updateData(chart, data) {
-        Datas.push(data);
-        chart.update();
     }
 
     // Power Control BTN
