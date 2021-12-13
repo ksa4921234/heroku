@@ -157,11 +157,17 @@ var sio = io.listen(http);
 var sendflag = 0;
 
 sio.sockets.on('connection', function (socket) {
-    socket.on('25on', function () {
-        client.publish('/EM330/shelly25/on', 'on')
+    socket.on('TF0on', function () {
+        client.publish('/EM330/shelly25/0on', 'on')
     });
-    socket.on('25off', function () {
-        client.publish('/EM330/shelly25/off', 'off')
+    socket.on('TF0off', function () {
+        client.publish('/EM330/shelly25/0off', 'off')
+    });
+    socket.on('TF1on', function () {
+        client.publish('/EM330/shelly25/1on', 'on')
+    });
+    socket.on('TF1off', function () {
+        client.publish('/EM330/shelly25/1off', 'off')
     });
     socket.on('ACon', function () {
         client.publish('/EM330/sensibo/ON')
