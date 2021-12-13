@@ -59,27 +59,15 @@
         </div>
         <div class="Side">
             <div class="Digital" id="value">
-                <div class="digital_text">當前用電量</div>
+                <div class="digital_text"><%=nowsendfirsts%></div>
                 <div class="digital_content">
                     <div class="watt" id="EMwatt" style="display:flex">
-                        <div class="watt_text">Watt</div>
-                        <div class="watt_value"><%=EMnowwatt%> w</div>
-                    </div>
-                    <div class="watt" id="TFwatt" style="display:none;">
-                        <div class="watt_text">Watt</div>
-                        <div class="watt_value"><%=TFnowwatt%> w</div>
-                    </div>
-                    <div class="watt" id="ACtmp" style="display:none;">
-                        <div class="watt_text">溫度</div>
-                        <div class="watt_value"><%=ACtmps%> 度</div>
+                        <div class="watt_text"><%=nowsendsecs%></div>
+                        <div class="watt_value"><%=nowsendthirds%></div>
                     </div>
                     <div class="voltage" id="EMvoltage">
-                        <div class="voltage_text">Voltage</div>
-                        <div class="voltage_value"><%=EMPowernow[EMPowernow.length-1].電壓%>V</div>
-                    </div>
-                    <div class="voltage" id="AChum" style="display: none;">
-                        <div class="voltage_text">濕度</div>
-                        <div class="voltage_value"><%=AChums%> RH</div>
+                        <div class="voltage_text"><%=nowsendfours%></div>
+                        <div class="voltage_value"><%=nowsendfives%></div>
                     </div>
                 </div>
                 <div class="lasttime">
@@ -87,12 +75,15 @@
                     <div class="lasttime_value"><%=EMnowdate%><span class="cycle">(每20秒更新一次)</span></div>
                 </div>
                 <% var ejsEMtenminswatt = JSON.parse(EMtenminswatt);%>
-                <div style="visibility: hidden;" id="EMtenminwatt"><%=ejsEMtenminswatt[ejsEMtenminswatt.length-1]%></div>
+                <div style="visibility: hidden;" id="EMtenminwatt"><%=ejsEMtenminswatt[ejsEMtenminswatt.length-1]%>
+                </div>
                 <% var ejsEMtenminsdate = JSON.parse(EMtenminsdate);%>
-                <div style="visibility: hidden;" id="EMtenmindate"><%=ejsEMtenminsdate[ejsEMtenminsdate.length-1]%></div>
+                <div style="visibility: hidden;" id="EMtenmindate"><%=ejsEMtenminsdate[ejsEMtenminsdate.length-1]%>
+                </div>
 
                 <% var ejsTFtenminswatt = JSON.parse(TFtenminswatt);%>
-                <div style="visibility: hidden;" id="TFtenminwatt"><%=ejsTFtenminswatt[ejsTFtenminswatt.length-1]%></div>
+                <div style="visibility: hidden;" id="TFtenminwatt"><%=ejsTFtenminswatt[ejsTFtenminswatt.length-1]%>
+                </div>
 
                 <% var ejsAChumarrays = JSON.parse(AChumarrays);%>
                 <div style="visibility: hidden;" id="ACtenminwatt"><%=ejsAChumarrays[ejsAChumarrays.length-1]%></div>
@@ -158,25 +149,24 @@
         ACHumarray = [];
     var EMtenminsdate = [],
         EMhoursdate = [],
-        EMdaysdate = [],
-
-        EMtenminswatt = "<%-ejsEMtenminswatt%>".split(",");
+        EMdaysdate = [];
+    EMtenminswatt = "<%-ejsEMtenminswatt%>".split(",");
     TFtenminswatt = "<%-ejsTFtenminswatt%>".split(",");
     ACHumarray = "<%-ejsAChumarrays%>".split(",");
     minutesdata = [EMtenminswatt, TFtenminswatt, ACHumarray];
 
     setInterval(() => {
-        if(minutes_text[minutes_text.length-1]!=document.getElementById('EMtenmindate').innerHTML){
-        EMtenminswatt.push(document.getElementById('EMtenminwatt').innerHTML);
-        TFtenminswatt.push(document.getElementById('TFtenminwatt').innerHTML);
-        ACHumarray.push(document.getElementById('ACtenminwatt').innerHTML);
-        EMtenminswatt.shift();
-        TFtenminswatt.shift();
-        ACHumarray.shift();
-        minutes_text.push(document.getElementById('EMtenmindate').innerHTML);
-        minutes_text.shift();
-        minutesdata = [EMtenminswatt, TFtenminswatt, ACHumarray];
-        myChart.update();
+        if (minutes_text[minutes_text.length - 1] != document.getElementById('EMtenmindate').innerHTML) {
+            EMtenminswatt.push(document.getElementById('EMtenminwatt').innerHTML);
+            TFtenminswatt.push(document.getElementById('TFtenminwatt').innerHTML);
+            ACHumarray.push(document.getElementById('ACtenminwatt').innerHTML);
+            EMtenminswatt.shift();
+            TFtenminswatt.shift();
+            ACHumarray.shift();
+            minutes_text.push(document.getElementById('EMtenmindate').innerHTML);
+            minutes_text.shift();
+            minutesdata = [EMtenminswatt, TFtenminswatt, ACHumarray];
+            myChart.update();
         }
     }, 1000);
 
@@ -268,11 +258,6 @@
         }
     });
 
-    // Timer for Update
-    // var Timer = setInterval(function() {
-    //         updateData(myChart,Math.floor(Math.random() * 100
-    //     ))},5000);
-
     // Change power watch ( shelly ) 
     function shelly_check(checkbox, num) {
         // single selection
@@ -280,28 +265,15 @@
         checkbox1.forEach((item) => {
             if (item != checkbox) item.checked = false;
         })
-        console.log(checkbox)
+        socket.emit('btnSW',num);
+        // $("#value").load("http://localhost:4000/" + " #value");
+        $("#value").load("https://murmuring-temple-18681.herokuapp.com/" + " #value");
         if (num == 0) {
             window.shellyNum = 0;
-            document.getElementById('EMwatt').style = 'display:flex';
-            document.getElementById('TFwatt').style = 'display:none';
-            document.getElementById('ACtmp').style = 'display:none';
-            document.getElementById('EMvoltage').style = 'display:flex';
-            document.getElementById('AChum').style = 'display:none';
         } else if (num == 1) {
             window.shellyNum = 1;
-            document.getElementById('EMwatt').style = 'display:none';
-            document.getElementById('TFwatt').style = 'display:flex';
-            document.getElementById('ACtmp').style = 'display:none';
-            document.getElementById('EMvoltage').style = 'display:flex';
-            document.getElementById('AChum').style = 'display:none';
         } else {
             window.shellyNum = 2;
-            document.getElementById('EMwatt').style = 'display:none';
-            document.getElementById('TFwatt').style = 'display:none';
-            document.getElementById('ACtmp').style = 'display:flex';
-            document.getElementById('EMvoltage').style = 'display:none';
-            document.getElementById('AChum').style = 'display:flex';
         }
 
         setChart(window.shellyNum, window.rangeNum);
