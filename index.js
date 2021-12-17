@@ -46,39 +46,81 @@ app.get('/', async (req, res) => {
     const TFPowerhours = await TFPowerhour.find({})
     const TFPowerdays = await TFPowerday.find({})
     const ACPosts = await ACPost.find({})
-
+    //EM當下
     var EMnowwatt = EMPowernows[EMPowernows.length - 1].功率;
     var EMnowvolt = EMPowernows[EMPowernows.length - 1].電壓;
     var EMnowdate =
         EMPowernows[EMPowernows.length - 1].createdAt.getHours() + ":" +
         EMPowernows[EMPowernows.length - 1].createdAt.getMinutes();
-    var EMtenminswatts = [];
-    var EMtenminsdates = [];
+    //EM十分鐘
+    var EMtenminsargwatts = [],
+        EMtenminstotalwatts = [],
+        EMtenminsdates = [];
     for (i = EMPowertenmins.length - 7; i < EMPowertenmins.length; i++) {
-        EMtenminswatts.push(EMPowertenmins[i].十分鐘平均功率);
+        EMtenminsargwatts.push(EMPowertenmins[i].十分鐘平均功率);
+        EMtenminstotalwatts.push(EMPowertenmins[i].十分鐘總共功率);
         EMtenminsdates.push(EMPowertenmins[i].createdAt.getHours() + ":" +
             EMPowertenmins[i].createdAt.getMinutes());
     }
-    EMtenminswatts = JSON.stringify(EMtenminswatts);
+    EMtenminsargwatts = JSON.stringify(EMtenminsargwatts);
+    EMtenminstotalwatts = JSON.stringify(EMtenminstotalwatts);
     EMtenminsdates = JSON.stringify(EMtenminsdates);
+    //EM一小時
+    var EMhourargwatts = [],
+        EMhourtotalwatts = [],
+        EMhoursdates = [];
+    if (EMPowerhours.length >= 24) {
+        for (i = EMPowerhours.length - 24; i < EMPowerhours.length; i++) {
+            EMhourargwatts.push(EMPowerhours[i].小時平均功率);
+            EMhourtotalwatts.push(EMPowerhours[i].小時總共功率);
+            EMhoursdates.push(EMPowerhours[i].createdAt.getDate() + "日" +
+                EMPowerhours[i].createdAt.getHours() + "時");
+        }
 
+    } else {
+        for (i = 0; i < 24; i++) {
+            EMhourargwatts.push(0);
+            EMhourtotalwatts.push(0);
+            EMhoursdates.push("No Data on Server!");
+        }
+    }
+    EMhourargwatts = JSON.stringify(EMhourargwatts);
+    EMhourtotalwatts = JSON.stringify(EMhourtotalwatts);
+    EMhoursdates = JSON.stringify(EMhoursdates);
+    //TF當下
     var TFnowwatt = TFPowernows[TFPowernows.length - 1].功率;
     var TFnowdate =
         TFPowernows[TFPowernows.length - 1].createdAt.getHours() + ":" +
         TFPowernows[TFPowernows.length - 1].createdAt.getMinutes();
-    var TFtenminswatts = [];
-    var TFtenminsdates = [];
+    //TF十分鐘
+    var TFtenminsargwatts = [],
+        TFtenminstotalwatts = [];
     for (i = TFPowertenmins.length - 7; i < TFPowertenmins.length; i++) {
-        TFtenminswatts.push(TFPowertenmins[i].十分鐘平均功率);
+        TFtenminsargwatts.push(TFPowertenmins[i].十分鐘平均功率);
+        TFtenminstotalwatts.push(TFPowertenmins[i].十分鐘總共功率);
     }
-    TFtenminswatts = JSON.stringify(TFtenminswatts);
+    TFtenminsargwatts = JSON.stringify(TFtenminsargwatts);
+    TFtenminstotalwatts = JSON.stringify(TFtenminstotalwatts);
+    //TF小時
+    var TFhourargwatts = [],
+        TFhourtotalwatts = [];
+    if (TFPowerhours.length >= 24) {
+        for (i = TFPowerhours.length - 24; i < TFPowerhours.length; i++) {
+            TFhourargwatts.push(TFPowerhours[i].小時平均功率);
+            TFhourtotalwatts.push(TFPowerhours[i].小時總共功率)
+        }
 
+    } else {
+        for (i = 0; i < 24; i++) {
+            TFhourargwatts.push(0);
+            TFhourtotalwatts.push(0);
+        }
+    }
+    TFhourargwatts = JSON.stringify(TFhourargwatts);
+    TFhourtotalwatts = JSON.stringify(TFhourtotalwatts);
     var ACtmp = ACPosts[ACPosts.length - 1].溫度;
     var AChum = ACPosts[ACPosts.length - 1].濕度;
     var AChumarray = [];
-    var ACnowdate =
-        ACPosts[ACPosts.length - 1].createdAt.getHours() + ":" +
-        ACPosts[ACPosts.length - 1].createdAt.getMinutes();
     for (i = ACPosts.length - 7; i < ACPosts.length; i++) {
         AChumarray.push(ACPosts[i].濕度);
     };
@@ -91,13 +133,13 @@ app.get('/', async (req, res) => {
     if (sendflag == 0) {
         nowsendfirst = "當前用電量";
         nowsendsec = "Watt";
-        nowsendthird = EMnowwatt + " w";
+        nowsendthird = EMnowwatt + " wh";
         nowsendfour = "Voltage";
         nowsendfive = EMnowvolt + " V";
     } else if (sendflag == 1) {
         nowsendfirst = "當前用電量";
         nowsendsec = "Watt";
-        nowsendthird = TFnowwatt + " w";
+        nowsendthird = TFnowwatt + " wh";
         nowsendfour = "Voltage";
         nowsendfive = EMnowvolt + " V";
     } else if (sendflag == 2) {
@@ -107,31 +149,35 @@ app.get('/', async (req, res) => {
         nowsendfour = "濕度";
         nowsendfive = AChum + " %";
     }
-    
+
     res.render('index2', {
         EMPowernow: EMPowernows,
         EMnowwatt: EMnowwatt,
         EMnowdate: EMnowdate,
-        EMPowertenmin: EMPowertenmins,
-        EMtenminswatt: EMtenminswatts,
+        EMtenminsargwatt: EMtenminsargwatts,
+        EMtenminstotalwatt:EMtenminstotalwatts,
+        EMhourargwatt: EMhourargwatts,
+        EMhourtotalwatt:EMhourtotalwatts,
         EMtenminsdate: EMtenminsdates,
+        EMhoursdate: EMhoursdates,
 
         TFPowernow: TFPowernows,
         TFnowwatt: TFnowwatt,
         TFnowdate: TFnowdate,
-        TFPowertenmin: TFPowertenmins,
-        TFtenminswatt: TFtenminswatts,
+        TFtenminsargwatt: TFtenminsargwatts,
+        TFtenminstotalwatt:TFtenminstotalwatts,
+        TFhourargwatt: TFhourargwatts,
+        TFhourtotalwatt: TFhourtotalwatts,
 
         ACtmps: ACtmp,
         AChums: AChum,
         AChumarrays: AChumarray,
-        ACnowdates: ACnowdate,
 
-        nowsendfirsts:nowsendfirst,
-        nowsendsecs:nowsendsec,
-        nowsendthirds:nowsendthird,
-        nowsendfours:nowsendfour,
-        nowsendfives:nowsendfive
+        nowsendfirsts: nowsendfirst,
+        nowsendsecs: nowsendsec,
+        nowsendthirds: nowsendthird,
+        nowsendfours: nowsendfour,
+        nowsendfives: nowsendfive
     });
 })
 

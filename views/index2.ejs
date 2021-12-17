@@ -40,16 +40,16 @@
                         <div class="range-text">檢視範圍:</div>
                         <input type="checkbox" id="hourbefore" class="range-button" autocomplete="off"
                             name="range_check" checked=true>
-                        <label id="hourbefore_lb" for="hourbefore" onclick="range_check(this,0)">過去一小時</label>
+                        <label id="hourbefore_lb" for="hourbefore" onclick="range_check(this,0)">過去一小時平均</label>
                         <input type="checkbox" id="daybefore" class="range-button" autocomplete="off"
                             name="range_check">
-                        <label id="daybefore_lb" for="daybefore" onclick="range_check(this,1)">過去一天</label>
+                        <label id="daybefore_lb" for="daybefore" onclick="range_check(this,1)">過去一小天平均</label>
                         <input type="checkbox" id="weekbefore" class="range-button" autocomplete="off"
                             name="range_check">
-                        <!-- <label id="weekbefore_lb" for="weekbefore" onclick="range_check(this,2)">過去一週</label>
+                        <label id="weekbefore_lb" for="weekbefore" onclick="range_check(this,2)">過去一小時總共</label>
                         <input type="checkbox" id="monthbefore" class="range-button" autocomplete="off"
                             name="range_check">
-                        <label id="monthbefore_lb" for="monthbefore" onclick="range_check(this,3)">過去一月</label> -->
+                        <label id="monthbefore_lb" for="monthbefore" onclick="range_check(this,3)">過去一天總共</label>
                     </div>
                 </form>
             </div>
@@ -74,12 +74,32 @@
                     <div class="lasttime_text">上次更新 :</div>
                     <div class="lasttime_value"><%=EMnowdate%><span class="cycle">(每20秒更新一次)</span></div>
                 </div>
-                <% var ejsEMtenminswatt = JSON.parse(EMtenminswatt);%>
-                <div style="visibility: hidden;" id="EMtenminwatt"><%=ejsEMtenminswatt[ejsEMtenminswatt.length-1]%></div>
+                <% var ejsEMtenminsargwatt = JSON.parse(EMtenminsargwatt);%>
+                <div style="visibility: hidden;" id="EMtenminargwatt"><%=ejsEMtenminsargwatt[ejsEMtenminsargwatt.length-1]%></div>
+                <% var ejsEMtenminstotalwatt = JSON.parse(EMtenminstotalwatt);%>
+                <div style="visibility: hidden;" id="EMtenmintotalwatt"><%=ejsEMtenminstotalwatt[ejsEMtenminstotalwatt.length-1]%></div>
+
                 <% var ejsEMtenminsdate = JSON.parse(EMtenminsdate);%>
                 <div style="visibility: hidden;" id="EMtenmindate"><%=ejsEMtenminsdate[ejsEMtenminsdate.length-1]%></div>
-                <% var ejsTFtenminswatt = JSON.parse(TFtenminswatt);%>
-                <div style="visibility: hidden;" id="TFtenminwatt"><%=ejsTFtenminswatt[ejsTFtenminswatt.length-1]%></div>
+
+                <% var ejsEMhourargwatt = JSON.parse(EMhourargwatt);%>
+                <div style="visibility: hidden;" id="EMhourargwatt"><%=ejsEMhourargwatt[ejsEMhourargwatt.length-1]%></div>
+                <% var ejsEMhourtotalwatt = JSON.parse(EMhourtotalwatt);%>
+                <div style="visibility: hidden;" id="EMhourtotalwatt"><%=ejsEMhourtotalwatt[ejsEMhourtotalwatt.length-1]%></div>
+
+                <% var ejsEMhoursdate = JSON.parse(EMhoursdate);%>
+                <div style="visibility: hidden;" id="EMhourdate"><%=ejsEMhoursdate[ejsEMhoursdate.length-1]%></div>
+
+                <% var ejsTFtenminsargwatt = JSON.parse(TFtenminsargwatt);%>
+                <div style="visibility: hidden;" id="TFtenminargwatt"><%=ejsTFtenminsargwatt[ejsTFtenminsargwatt.length-1]%></div>
+                <% var ejsTFtenminstotalwatt = JSON.parse(TFtenminstotalwatt);%>
+                <div style="visibility: hidden;" id="TFtenmintotalwatt"><%=ejsTFtenminstotalwatt[ejsTFtenminstotalwatt.length-1]%></div>
+
+                <% var ejsTFhourargwatt = JSON.parse(TFhourargwatt);%>
+                <div style="visibility: hidden;" id="TFhourargwatt"><%=ejsTFhourargwatt[ejsTFhourargwatt.length-1]%></div>
+                <% var ejsTFhourtotalwatt = JSON.parse(TFhourtotalwatt);%>
+                <div style="visibility: hidden;" id="TFhourtotalwatt"><%=ejsTFhourtotalwatt[ejsTFhourtotalwatt.length-1]%></div>
+
                 <% var ejsAChumarrays = JSON.parse(AChumarrays);%>
                 <div style="visibility: hidden;" id="ACtenminwatt"><%=ejsAChumarrays[ejsAChumarrays.length-1]%></div>
             </div>
@@ -125,84 +145,93 @@
     }, 10000);
     var socket = io.connect();
     // ----- Test Datas -----
-    var minutesdata = [];
-    var hoursdata = [];
-    var daysdata = [];
-    var weeksdata = [];
+    var minutesargdata = [];
+    var hoursargdata = [];
+    var minutestotaldata = [];
+    var hourstotaldata = [];
     var data1 = [];
     var data2 = [];
     var data3 = [];
     var data4 = [];
     var nulldata = [];
-    var EMtenminswatt = [],
-        EMhourswatt = [],
+    var EMtenminsargwatt = [],
+        EMhourargwatt = [],
+        EMtenminstotalwatt = [],
+        EMhourtotalwatt = [],
         EMdayswatt = [],
-        TFtenminswatt = [],
-        TFhourswatt = [],
+        TFtenminsargwatt = [],
+        TFhourargwatt = [],
+        TFtenminstotalwatt = [],
+        TFhourtotalwatt = [],
         TFdayswatt = [],
         ACHumarray = [];
     var EMtenminsdate = [],
         EMhoursdate = [],
         EMdaysdate = [];
-    EMtenminswatt = "<%-ejsEMtenminswatt%>".split(",");
-    TFtenminswatt = "<%-ejsTFtenminswatt%>".split(",");
+    EMtenminsargwatt = "<%-ejsEMtenminsargwatt%>".split(",");
+    TFtenminsargwatt = "<%-ejsTFtenminsargwatt%>".split(",");
+    EMtenminstotalwatt = "<%-ejsEMtenminstotalwatt%>".split(",");
+    TFtenminstotalwatt = "<%-ejsTFtenminstotalwatt%>".split(",");
     ACHumarray = "<%-ejsAChumarrays%>".split(",");
-    minutesdata = [EMtenminswatt, TFtenminswatt, ACHumarray];
 
+    EMhourargwatt = "<%-ejsEMhourargwatt%>".split(",");
+    TFhourargwatt = "<%-ejsTFhourargwatt%>".split(",");
+    EMhourtotalwatt = "<%-ejsEMhourtotalwatt%>".split(",");
+    TFhourtotalwatt = "<%-ejsTFhourtotalwatt%>".split(",");
+    minutesargdata = [EMtenminsargwatt, TFtenminsargwatt, ACHumarray];
+    hoursargdata=[EMhourargwatt,TFhourargwatt,ACHumarray];
+    minutestotaldata = [EMtenminstotalwatt,TFtenminstotalwatt]
+    hourstotaldata = [EMhourtotalwatt,TFhourtotalwatt]
     setInterval(() => {
-        if (minutes_text[minutes_text.length - 1] != document.getElementById('EMtenmindate').innerHTML) {
-            console.log(minutes_text[minutes_text.length - 1]);
-            console.log(document.getElementById('EMtenmindate').innerHTML);
-            EMtenminswatt.push(document.getElementById('EMtenminwatt').innerHTML);
-            TFtenminswatt.push(document.getElementById('TFtenminwatt').innerHTML);
+        if (minutesarg_text[minutesarg_text.length - 1] != document.getElementById('EMtenmindate').innerHTML) {
+            EMtenminsargwatt.push(document.getElementById('EMtenminargwatt').innerHTML);
+            TFtenminsargwatt.push(document.getElementById('TFtenminargwatt').innerHTML);
+            EMhourargwatt.push(document.getElementById('EMhourargwatt').innerHTML);
+            TFhourargwatt.push(document.getElementById('TFhourargwatt').innerHTML);
+            
+            EMtenminstotalwatt.push(document.getElementById('EMtenmintotalwatt').innerHTML);
+            TFtenminstotalwatt.push(document.getElementById('TFtenmintotalwatt').innerHTML);
+            EMhourtotalwatt.push(document.getElementById('EMhourtotalwatt').innerHTML);
+            TFhourtotalwatt.push(document.getElementById('TFhourtotalwatt').innerHTML);
             ACHumarray.push(document.getElementById('ACtenminwatt').innerHTML);
-            EMtenminswatt.shift();
-            TFtenminswatt.shift();
+            EMtenminsargwatt.shift();
+            TFtenminsargwatt.shift();
+            EMhourargwatt.shift();
+            TFhourargwatt.shift();
+
+            EMtenminstotalwatt.shift();
+            TFtenminstotalwatt.shift();
+            EMhourtotalwatt.shift();
+            TFhourtotalwatt.shift();
             ACHumarray.shift();
-            minutes_text.push(document.getElementById('EMtenmindate').innerHTML);
-            minutes_text.shift();
-            minutesdata = [EMtenminswatt, TFtenminswatt, ACHumarray];
+            minutesarg_text.push(document.getElementById('EMtenmindate').innerHTML);
+            minutesarg_text.shift();
+            hoursarg_text.push(document.getElementById('EMhourdate').innerHTML);
+            hoursarg_text.shift();
+            minutesargdata = [EMtenminsargwatt, TFtenminsargwatt, ACHumarray];
+            hoursargdata=[EMhourargwatt,TFhourargwatt,ACHumarray];
+            minutestotaldata = [EMtenminstotalwatt,TFtenminstotalwatt]
+            hourstotaldata = [EMhourtotalwatt,TFhourtotalwatt]
             myChart.update();
         }
     }, 1000);
-
-    for (i = 0; i < 3; i++) {
-        data2 = [];
-        data3 = [];
-        data4 = [];
-        for (j = 0; j < 7; j++) //7days and onehours
-        {
-            data3.push(Math.floor(Math.random() * 16800));
-        }
-        for (k = 0; k < 24; k++) //24hours
-        {
-            data2.push(Math.floor(Math.random() * 700));
-        }
-        for (l = 0; l < 4; l++) //four week
-        {
-            data4.push(Math.floor(Math.random() * 67200));
-        }
-        hoursdata.push(data2);
-        daysdata.push(data3);
-        weeksdata.push(data4);
-    }
     var Shelly1_Datas = {
-        minutes: minutesdata[0],
-        hours: hoursdata[0],
-        days: daysdata[0],
-        weeks: weeksdata[0]
+        minutes: minutesargdata[0],
+        hours: hoursargdata[0],
+        days: minutestotaldata[0],
+        weeks: hourstotaldata[0]
     };
     var Shelly2_Datas = {
-        minutes: minutesdata[1],
-        hours: hoursdata[1],
-        days: daysdata[1],
-        weeks: weeksdata[1]
+        minutes: minutesargdata[1],
+        hours: hoursargdata[1],
+        days: minutestotaldata[1],
+        weeks: hourstotaldata[1]
     };
     var Shelly3_Datas = {
-        minutes: minutesdata[2],
-        hours: hoursdata[2],
-        days: daysdata[2],
-        weeks: weeksdata[2]
+        minutes: minutesargdata[2],
+        hours: hoursargdata[2],
+        days: minutestotaldata[2],
+        weeks: hourstotaldata[2]
     };
     console.log("Shelly1", Shelly1_Datas);
     console.log("Shelly2", Shelly2_Datas);
@@ -213,16 +242,13 @@
     window.shellyNum = 0;
     window.rangeNum = 0;
 
-    const minutes_text = '<%-ejsEMtenminsdate%>'.split(",");
+    const minutesarg_text = '<%-ejsEMtenminsdate%>'.split(",");
 
-    const hours_text = ['12AM', '1AM', '2AM', '3AM', '4AM', '5AM',
-        '6AM', '7AM', '8AM', '9AM', '10AM', '11AM',
-        '12PM', '1PM', '2PM', '3PM', '4PM', '5PM',
-        '6PM', '7PM', '8PM', '9PM', '10PM', '11PM'
-    ];
+    const hoursarg_text = '<%-ejsEMhoursdate%>'.split(",");
+
     const days_text = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const weeks_text = ['Week1', 'Week2', 'Week3', 'Week4'];
-    window.chartLabels = minutes_text; // 預設檢視範圍 : 過去一小時
+    window.chartLabels = minutesarg_text; // 預設檢視範圍 : 過去一小時
 
     window.Datas = Shelly1_Datas.minutes;
 
@@ -288,10 +314,10 @@
             if (item != checkbox) item.checked = false;
         })
         window.rangeNum = num;
-        if (num == 0) window.chartLabels = minutes_text;
-        else if (num == 1) window.chartLabels = hours_text;
-        else if (num == 2) window.chartLabels = days_text;
-        else window.chartLabels = weeks_text;
+        if (num == 0) window.chartLabels = minutesarg_text;
+        else if (num == 1) window.chartLabels = hoursarg_text;
+        else if (num == 2) window.chartLabels = minutesarg_text;
+        else window.chartLabels = hoursarg_text;
 
         myChart.data.labels = window.chartLabels;
 

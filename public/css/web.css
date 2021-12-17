@@ -156,7 +156,7 @@ div form label{
     user-select: none;
     background-color: #dadada;
     border: 2px solid #dadada;
-    font-size: 15px;
+    font-size: 10px;
     border-radius: 5px;
     transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
 }
