@@ -40,16 +40,16 @@
                         <div class="range-text">檢視範圍:</div>
                         <input type="checkbox" id="hourbefore" class="range-button" autocomplete="off"
                             name="range_check" checked=true>
-                        <label id="hourbefore_lb" for="hourbefore" onclick="range_check(this,0)">過去一小時平均</label>
+                        <label id="hourbefore_lb" for="hourbefore" onclick="range_check(this,0)">當前一小時功率</label>
                         <input type="checkbox" id="daybefore" class="range-button" autocomplete="off"
                             name="range_check">
-                        <label id="daybefore_lb" for="daybefore" onclick="range_check(this,1)">過去一小天平均</label>
+                        <label id="daybefore_lb" for="daybefore" onclick="range_check(this,1)">當日功率</label>
                         <input type="checkbox" id="weekbefore" class="range-button" autocomplete="off"
                             name="range_check">
-                        <label id="weekbefore_lb" for="weekbefore" onclick="range_check(this,2)">過去一小時總共</label>
+                        <label id="weekbefore_lb" for="weekbefore" onclick="range_check(this,2)">過去小時累計損耗電力</label>
                         <input type="checkbox" id="monthbefore" class="range-button" autocomplete="off"
                             name="range_check">
-                        <label id="monthbefore_lb" for="monthbefore" onclick="range_check(this,3)">過去一天總共</label>
+                        <label id="monthbefore_lb" for="monthbefore" onclick="range_check(this,3)">過去一日累計損耗電力</label>
                     </div>
                 </form>
             </div>
@@ -252,7 +252,7 @@
 
     window.Datas = Shelly1_Datas.minutes;
 
-    var chartlabel = '平均用電';
+    var chartlabel = '當前功率wh';
     // 初始化 Chart
     var ctx = document.getElementById("chartPlot");
     var myChart = new Chart(ctx, {
@@ -294,13 +294,10 @@
         $("#value").load("https://murmuring-temple-18681.herokuapp.com/" + " #value");
         if (num == 0) {
             window.shellyNum = 0;
-            chartlabel = '平均用電';
         } else if (num == 1) {
             window.shellyNum = 1;
-            chartlabel = '平均用電';
         } else {
             window.shellyNum = 2;
-            chartlabel = "平均濕度"
         }
         setChart(window.shellyNum, window.rangeNum);
         myChart.update();
@@ -314,13 +311,25 @@
             if (item != checkbox) item.checked = false;
         })
         window.rangeNum = num;
-        if (num == 0) window.chartLabels = minutesarg_text;
-        else if (num == 1) window.chartLabels = hoursarg_text;
-        else if (num == 2) window.chartLabels = minutesarg_text;
-        else window.chartLabels = hoursarg_text;
+        if (num == 0){
+          window.chartLabels = minutesarg_text;
+          chartlabel = "當前功率wh";
+        } 
+        else if (num == 1){
+           window.chartLabels = hoursarg_text;
+           chartlabel = "當前功率wh";
+        } 
+        else if (num == 2){
+           window.chartLabels = minutesarg_text;
+           chartlabel = "累計損耗功率kw"
+        } 
+        else{
+           window.chartLabels = hoursarg_text; 
+           chartlabel = "累計損耗功率kw"
+        } 
 
         myChart.data.labels = window.chartLabels;
-
+        myChart.data.datasets[0].label = chartlabel;
         setChart(window.shellyNum, window.rangeNum);
 
         myChart.update();

@@ -58,7 +58,7 @@ app.get('/', async (req, res) => {
         EMtenminsdates = [];
     for (i = EMPowertenmins.length - 7; i < EMPowertenmins.length; i++) {
         EMtenminsargwatts.push(EMPowertenmins[i].十分鐘平均功率);
-        EMtenminstotalwatts.push(EMPowertenmins[i].十分鐘總共功率);
+        EMtenminstotalwatts.push((EMPowertenmins[i].十分鐘總共功率/1000).toFixed(2));
         EMtenminsdates.push(EMPowertenmins[i].createdAt.getHours() + ":" +
             EMPowertenmins[i].createdAt.getMinutes());
     }
@@ -72,7 +72,7 @@ app.get('/', async (req, res) => {
     if (EMPowerhours.length >= 24) {
         for (i = EMPowerhours.length - 24; i < EMPowerhours.length; i++) {
             EMhourargwatts.push(EMPowerhours[i].小時平均功率);
-            EMhourtotalwatts.push(EMPowerhours[i].小時總共功率);
+            EMhourtotalwatts.push((EMPowerhours[i].小時總共功率/1000).toFixed(2));
             EMhoursdates.push(EMPowerhours[i].createdAt.getDate() + "日" +
                 EMPowerhours[i].createdAt.getHours() + "時");
         }
@@ -89,6 +89,7 @@ app.get('/', async (req, res) => {
     EMhoursdates = JSON.stringify(EMhoursdates);
     //TF當下
     var TFnowwatt = TFPowernows[TFPowernows.length - 1].功率;
+    var TFnowvolt = TFPowernows[TFPowernows.length - 1].電壓;
     var TFnowdate =
         TFPowernows[TFPowernows.length - 1].createdAt.getHours() + ":" +
         TFPowernows[TFPowernows.length - 1].createdAt.getMinutes();
@@ -131,17 +132,17 @@ app.get('/', async (req, res) => {
         nowsendfour,
         nowsendfive;
     if (sendflag == 0) {
-        nowsendfirst = "當前用電量";
+        nowsendfirst = "當前用電量ShellyEM";
         nowsendsec = "Watt";
         nowsendthird = EMnowwatt + " wh";
         nowsendfour = "Voltage";
         nowsendfive = EMnowvolt + " V";
     } else if (sendflag == 1) {
-        nowsendfirst = "當前用電量";
+        nowsendfirst = "當前用電量Shelly25";
         nowsendsec = "Watt";
         nowsendthird = TFnowwatt + " wh";
         nowsendfour = "Voltage";
-        nowsendfive = EMnowvolt + " V";
+        nowsendfive = TFnowvolt + " V";
     } else if (sendflag == 2) {
         nowsendfirst = "當前冷氣狀態";
         nowsendsec = "溫度";
