@@ -185,33 +185,33 @@
     setInterval(() => {
         if (minutesarg_text[minutesarg_text.length - 1] != document.getElementById('EMtenmindate').innerHTML) {
             EMtenminsargwatt.push(document.getElementById('EMtenminargwatt').innerHTML);
-            TFtenminsargwatt.push(document.getElementById('TFtenminargwatt').innerHTML);
-            EMhourargwatt.push(document.getElementById('EMhourargwatt').innerHTML);
-            TFhourargwatt.push(document.getElementById('TFhourargwatt').innerHTML);
-            
+            TFtenminsargwatt.push(document.getElementById('TFtenminargwatt').innerHTML);      
             EMtenminstotalwatt.push(document.getElementById('EMtenmintotalwatt').innerHTML);
             TFtenminstotalwatt.push(document.getElementById('TFtenmintotalwatt').innerHTML);
-            EMhourtotalwatt.push(document.getElementById('EMhourtotalwatt').innerHTML);
-            TFhourtotalwatt.push(document.getElementById('TFhourtotalwatt').innerHTML);
             ACHumarray.push(document.getElementById('ACtenminwatt').innerHTML);
             EMtenminsargwatt.shift();
             TFtenminsargwatt.shift();
-            EMhourargwatt.shift();
-            TFhourargwatt.shift();
-
             EMtenminstotalwatt.shift();
             TFtenminstotalwatt.shift();
-            EMhourtotalwatt.shift();
-            TFhourtotalwatt.shift();
             ACHumarray.shift();
             minutesarg_text.push(document.getElementById('EMtenmindate').innerHTML);
             minutesarg_text.shift();
+            minutesargdata = [EMtenminsargwatt, TFtenminsargwatt, ACHumarray];
+            minutestotaldata = [EMtenminstotalwatt,TFtenminstotalwatt];
+            myChart.update();
+        }else if(hoursarg_text[hoursarg_text.length - 1] != document.getElementById('EMhourdate').innerHTML){
+            EMhourargwatt.push(document.getElementById('EMhourargwatt').innerHTML);
+            TFhourargwatt.push(document.getElementById('TFhourargwatt').innerHTML);
+            EMhourtotalwatt.push(document.getElementById('EMhourtotalwatt').innerHTML);
+            TFhourtotalwatt.push(document.getElementById('TFhourtotalwatt').innerHTML);
+            EMhourtotalwatt.shift();
+            TFhourtotalwatt.shift();
+            EMhourargwatt.shift();
+            TFhourargwatt.shift();
             hoursarg_text.push(document.getElementById('EMhourdate').innerHTML);
             hoursarg_text.shift();
-            minutesargdata = [EMtenminsargwatt, TFtenminsargwatt, ACHumarray];
             hoursargdata=[EMhourargwatt,TFhourargwatt,ACHumarray];
-            minutestotaldata = [EMtenminstotalwatt,TFtenminstotalwatt]
-            hourstotaldata = [EMhourtotalwatt,TFhourtotalwatt]
+            hourstotaldata = [EMhourtotalwatt,TFhourtotalwatt];
             myChart.update();
         }
     }, 1000);
@@ -233,9 +233,9 @@
         days: minutestotaldata[2],
         weeks: hourstotaldata[2]
     };
-    console.log("Shelly1", Shelly1_Datas);
-    console.log("Shelly2", Shelly2_Datas);
-    console.log("Shelly3", Shelly3_Datas);
+    // console.log("Shelly1", Shelly1_Datas);
+    // console.log("Shelly2", Shelly2_Datas);
+    // console.log("Shelly3", Shelly3_Datas);
     // ----- End Line -----
 
     // ----- Main Part -----
