@@ -98,7 +98,7 @@ app.get('/', async (req, res) => {
         TFtenminstotalwatts = [];
     for (i = TFPowertenmins.length - 7; i < TFPowertenmins.length; i++) {
         TFtenminsargwatts.push(TFPowertenmins[i].十分鐘平均功率);
-        TFtenminstotalwatts.push(TFPowertenmins[i].十分鐘總共功率);
+        TFtenminstotalwatts.push((TFPowertenmins[i].十分鐘總共功率/1000).toFixed(2));
     }
     TFtenminsargwatts = JSON.stringify(TFtenminsargwatts);
     TFtenminstotalwatts = JSON.stringify(TFtenminstotalwatts);
@@ -108,7 +108,7 @@ app.get('/', async (req, res) => {
     if (TFPowerhours.length >= 24) {
         for (i = TFPowerhours.length - 24; i < TFPowerhours.length; i++) {
             TFhourargwatts.push(TFPowerhours[i].小時平均功率);
-            TFhourtotalwatts.push(TFPowerhours[i].小時總共功率)
+            TFhourtotalwatts.push((TFPowerhours[i].小時總共功率/1000).toFixed(2));
         }
 
     } else {
