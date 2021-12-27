@@ -103,7 +103,7 @@
     margin-top: 20px;
     margin-bottom: 20px;
     width: 60%;
-    height: 580px;
+    height: 570px;
     border-color: black;
     float: left;
     background-color: whitesmoke;
@@ -125,11 +125,11 @@
 }
 .shelly_selection{
     float: left;
-    width: 43%;
+    width: 55%;
 }
 .range_selection{
     float: right;
-    width: 57%;
+    width: 45%;
     border-left: 2px solid rgb(136, 136, 136);
     padding-left: 20px;
 }
