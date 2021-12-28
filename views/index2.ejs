@@ -40,16 +40,16 @@
                         <div class="range-text">檢視範圍:</div>
                         <input type="checkbox" id="hourbefore" class="range-button" autocomplete="off"
                             name="range_check" checked=true>
-                        <label id="hourbefore_lb" for="hourbefore" onclick="range_check(this,0)">當前一小時功率</label>
+                        <label id="hourbefore_lb" for="hourbefore" onclick="range_check(this,0)">一小時內功率</label>
                         <input type="checkbox" id="daybefore" class="range-button" autocomplete="off"
                             name="range_check">
-                        <label id="daybefore_lb" for="daybefore" onclick="range_check(this,1)">當日功率</label>
+                        <label id="daybefore_lb" for="daybefore" onclick="range_check(this,1)">24小時內功率</label>
                         <input type="checkbox" id="weekbefore" class="range-button" autocomplete="off"
                             name="range_check"><br>
-                        <label id="weekbefore_lb" for="weekbefore" onclick="range_check(this,2)">過去小時累計損耗電能</label>
+                        <label id="weekbefore_lb" for="weekbefore" onclick="range_check(this,2)">過去一小時累計損耗電能</label>
                         <input type="checkbox" id="monthbefore" class="range-button" autocomplete="off"
                             name="range_check">
-                        <label id="monthbefore_lb" for="monthbefore" onclick="range_check(this,3)">過去一日累計損耗電能</label>
+                        <label id="monthbefore_lb" for="monthbefore" onclick="range_check(this,3)">過去24小時累計損耗電能</label>
                     </div>
                 </form>
             </div>
@@ -252,7 +252,7 @@
 
     window.Datas = Shelly1_Datas.minutes;
 
-    var chartlabel = '當前功率wh';
+    var chartlabel = '當前功率w';
     // 初始化 Chart
     var ctx = document.getElementById("chartPlot");
     var myChart = new Chart(ctx, {
@@ -313,11 +313,11 @@
         window.rangeNum = num;
         if (num == 0){
           window.chartLabels = minutesarg_text;
-          chartlabel = "當前功率wh";
+          chartlabel = "當前功率w";
         } 
         else if (num == 1){
            window.chartLabels = hoursarg_text;
-           chartlabel = "當前功率wh";
+           chartlabel = "當前功率w";
         } 
         else if (num == 2){
            window.chartLabels = minutesarg_text;

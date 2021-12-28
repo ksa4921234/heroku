@@ -134,13 +134,13 @@ app.get('/', async (req, res) => {
     if (sendflag == 0) {
         nowsendfirst = "當前用電量ShellyEM";
         nowsendsec = "Watt";
-        nowsendthird = EMnowwatt + " wh";
+        nowsendthird = EMnowwatt + " w";
         nowsendfour = "Voltage";
         nowsendfive = EMnowvolt + " V";
     } else if (sendflag == 1) {
         nowsendfirst = "當前用電量Shelly25";
         nowsendsec = "Watt";
-        nowsendthird = TFnowwatt + " wh";
+        nowsendthird = TFnowwatt + " w";
         nowsendfour = "Voltage";
         nowsendfive = TFnowvolt + " V";
     } else if (sendflag == 2) {
