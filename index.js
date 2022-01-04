@@ -58,7 +58,7 @@ app.get('/', async (req, res) => {
         EMtenminsdates = [];
     for (i = EMPowertenmins.length - 7; i < EMPowertenmins.length; i++) {
         EMtenminsargwatts.push(EMPowertenmins[i].十分鐘平均功率);
-        EMtenminstotalwatts.push((EMPowertenmins[i].十分鐘總共功率/1000).toFixed(2));
+        EMtenminstotalwatts.push((EMPowertenmins[i].十分鐘總共功率 / 1000).toFixed(2));
         EMtenminsdates.push(EMPowertenmins[i].createdAt.getHours() + ":" +
             EMPowertenmins[i].createdAt.getMinutes());
     }
@@ -72,7 +72,7 @@ app.get('/', async (req, res) => {
     if (EMPowerhours.length >= 24) {
         for (i = EMPowerhours.length - 24; i < EMPowerhours.length; i++) {
             EMhourargwatts.push(EMPowerhours[i].小時平均功率);
-            EMhourtotalwatts.push((EMPowerhours[i].小時總共功率/1000).toFixed(2));
+            EMhourtotalwatts.push((EMPowerhours[i].小時總共功率 / 1000).toFixed(2));
             EMhoursdates.push(EMPowerhours[i].createdAt.getDate() + "日" +
                 EMPowerhours[i].createdAt.getHours() + "時");
         }
@@ -98,7 +98,7 @@ app.get('/', async (req, res) => {
         TFtenminstotalwatts = [];
     for (i = TFPowertenmins.length - 7; i < TFPowertenmins.length; i++) {
         TFtenminsargwatts.push(TFPowertenmins[i].十分鐘平均功率);
-        TFtenminstotalwatts.push((TFPowertenmins[i].十分鐘總共功率/1000).toFixed(2));
+        TFtenminstotalwatts.push((TFPowertenmins[i].十分鐘總共功率 / 1000).toFixed(2));
     }
     TFtenminsargwatts = JSON.stringify(TFtenminsargwatts);
     TFtenminstotalwatts = JSON.stringify(TFtenminstotalwatts);
@@ -108,7 +108,7 @@ app.get('/', async (req, res) => {
     if (TFPowerhours.length >= 24) {
         for (i = TFPowerhours.length - 24; i < TFPowerhours.length; i++) {
             TFhourargwatts.push(TFPowerhours[i].小時平均功率);
-            TFhourtotalwatts.push((TFPowerhours[i].小時總共功率/1000).toFixed(2));
+            TFhourtotalwatts.push((TFPowerhours[i].小時總共功率 / 1000).toFixed(2));
         }
 
     } else {
@@ -134,7 +134,8 @@ app.get('/', async (req, res) => {
     if (sendflag == 0) {
         nowsendfirst = "當前用電量ShellyEM";
         nowsendsec = "Watt";
-        nowsendthird = EMnowwatt + " w";
+        if (EMnowwatt > 1000) nowsendthird = (EMnowwatt / 1000).toFixed(2) + " kw";
+        else nowsendthird = EMnowwatt + " w";
         nowsendfour = "Voltage";
         nowsendfive = EMnowvolt + " V";
     } else if (sendflag == 1) {
@@ -156,9 +157,9 @@ app.get('/', async (req, res) => {
         EMnowwatt: EMnowwatt,
         EMnowdate: EMnowdate,
         EMtenminsargwatt: EMtenminsargwatts,
-        EMtenminstotalwatt:EMtenminstotalwatts,
+        EMtenminstotalwatt: EMtenminstotalwatts,
         EMhourargwatt: EMhourargwatts,
-        EMhourtotalwatt:EMhourtotalwatts,
+        EMhourtotalwatt: EMhourtotalwatts,
         EMtenminsdate: EMtenminsdates,
         EMhoursdate: EMhoursdates,
 
@@ -166,7 +167,7 @@ app.get('/', async (req, res) => {
         TFnowwatt: TFnowwatt,
         TFnowdate: TFnowdate,
         TFtenminsargwatt: TFtenminsargwatts,
-        TFtenminstotalwatt:TFtenminstotalwatts,
+        TFtenminstotalwatt: TFtenminstotalwatts,
         TFhourargwatt: TFhourargwatts,
         TFhourtotalwatt: TFhourtotalwatts,
 
