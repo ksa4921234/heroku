@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <%- include('layouts/header');-%>
+<script src='socket.io/socket.io.js'></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 
 <body style="background-color: #ffffff;">
 
     <%- include('layouts/navbar');-%>
-
+    <!-----Home Section----->
     <section class="home" id="home"></section>
     <section class="home-content" id="home-content">
         <div class="max-size">
@@ -16,104 +18,372 @@
         </div>
     </section>
 
-    <div class="Plot">
-        <h1>Plot</h1>
-        <canvas id="myChart"></canvas>
-    </div>
-    <div class="Side">
-        <div class="Digital" id="value">
-            <h1>Now</h1>
-            <% if (oneminPowerPosts.length>5) {%>
-            <div>
-                <h3 id="Watt-Text">Watt : </h3>
-                <h5 id="Watt-Value"><%var watt = JSON.parse(wattarray)%><%=watt[watt.length-1]%></h5>
-                <h5 id="Watt-Unit">kW</h5>
+    <!-----Main Project----->
+    <div class="main">
+        <div class="Plot">
+            <div class="plot-text">用電量圖表</div>
+            <div class="selectform">
+                <form name="select-form">
+                    <div class="shelly_selection">
+                        <div class="select-text">檢視電錶:</div>
+                        <input type="checkbox" id="shelly1" class="shelly-button" autocomplete="off" name="shelly_check"
+                            checked=true>
+                        <label id="shelly1_lb" for="shelly1" onclick="shelly_check(this,0)">ShellyEM</label>
+                        <input type="checkbox" id="shelly2" class="shelly-button" autocomplete="off"
+                            name="shelly_check">
+                        <label id="shelly2_lb" for="shelly2" onclick="shelly_check(this,1)">Shelly25</label>
+                        <input type="checkbox" id="shelly3" class="shelly-button" autocomplete="off"
+                            name="shelly_check">
+                        <label id="shelly3_lb" for="shelly3" onclick="shelly_check(this,2)">AC</label>
+                    </div>
+                    <div class="range_selection">
+                        <div class="range-text">檢視範圍:</div>
+                        <input type="checkbox" id="hourbefore" class="range-button" autocomplete="off"
+                            name="range_check" checked=true>
+                        <label id="hourbefore_lb" for="hourbefore" onclick="range_check(this,0)">一小時內設備使用功率</label>
+                        <input type="checkbox" id="daybefore" class="range-button" autocomplete="off"
+                            name="range_check">
+                        <label id="daybefore_lb" for="daybefore" onclick="range_check(this,1)">24小時內設備使用功率</label>
+                        <br>
+                        <input type="checkbox" id="weekbefore" class="range-button" autocomplete="off"
+                            name="range_check">
+                        <label id="weekbefore_lb" for="weekbefore" onclick="range_check(this,2)">過去24小時累計損耗電能</label>
+                        <input type="checkbox" id="monthbefore" class="range-button" autocomplete="off"
+                            name="range_check">
+                        <label id="monthbefore_lb" for="monthbefore" onclick="range_check(this,3)">目前總計損耗電能</label>
+                    </div>
+                </form>
             </div>
-            <div>
-                <h3 id="voltage-Text">Voltage : </h3>
-                <h5 id="voltage-Value"><%=oneminPowerPosts[oneminPowerPosts.length-1].電壓%></h5>
-                <h5 id="voltage-Unit">v</h5>
+            <div class="chart">
+                <canvas id="chartPlot" class="myChart"></canvas>
             </div>
-            <div>
-                <h3 id="Time-Value"><%var date = JSON.parse(datearray)%><%=date[date.length-1]%></h3>
-            </div>
-            <% } else { %>
-            <h1>No Data now!</h1>
-            <% } %>
         </div>
-        <div class="Control">
-            <h1>Control</h1>
-            <div>
-                <button id="BtnOn">on</button>
-                <button id="BtnOff">Off</button>
+        <div class="Side">
+            <div class="Digital" id="value">
+                <div class="digital_text"><%=nowsendfirsts%></div>
+                <div class="digital_content">
+                    <div class="watt" id="EMwatt" style="display:flex">
+                        <div class="watt_text"><%=nowsendsecs%></div>
+                        <div class="watt_value"><%=nowsendthirds%></div>
+                    </div>
+                    <div class="voltage" id="EMvoltage">
+                        <div class="voltage_text"><%=nowsendfours%></div>
+                        <div class="voltage_value"><%=nowsendfives%></div>
+                    </div>
+                </div>
+                <div class="lasttime">
+                    <div class="lasttime_text">上次更新 :</div>
+                    <div class="lasttime_value"><%=EMnowdate%><span class="cycle">(每20秒更新一次)</span></div>
+                </div>
+                <% var ejsEMtenminsargwatt = JSON.parse(EMtenminsargwatt);%>
+                <div style="visibility: hidden;" id="EMtenminargwatt"><%=ejsEMtenminsargwatt[ejsEMtenminsargwatt.length-1]%></div>
+                <% var ejsEMyearstotalwatt = JSON.parse(EMyearstotalwatt);%>
+                <div style="visibility: hidden;" id="EMyeartotalwatt"><%=ejsEMyearstotalwatt[ejsEMyearstotalwatt.length-1]%></div>
+                <% var ejsEMyearsdate = JSON.parse(EMyearsdate);%>
+                <div style="visibility: hidden;" id="EMyeardate"><%=ejsEMyearsdate[ejsEMyearsdate.length-1]%></div>
+                <% var ejsEMtenminsdate = JSON.parse(EMtenminsdate);%>
+                <div style="visibility: hidden;" id="EMtenmindate"><%=ejsEMtenminsdate[ejsEMtenminsdate.length-1]%></div>
+                <% var ejsEMhoursargwatt = JSON.parse(EMhourargwatt);%>
+                <div style="visibility: hidden;" id="EMhourargwatt"><%=ejsEMhoursargwatt[ejsEMhoursargwatt.length-1]%></div>
+                <% var ejsEMhourstotalwatt = JSON.parse(EMhourtotalwatt);%>
+                <div style="visibility: hidden;" id="EMhourtotalwatt"><%=ejsEMhourstotalwatt[ejsEMhourstotalwatt.length-1]%></div>
+                <% var ejsEMhoursdate = JSON.parse(EMhoursdate);%>
+                <div style="visibility: hidden;" id="EMhourdate"><%=ejsEMhoursdate[ejsEMhoursdate.length-1]%></div>
+                <% var ejsTFtenminsargwatt = JSON.parse(TFtenminsargwatt);%>
+                <div style="visibility: hidden;" id="TFtenminargwatt"><%=ejsTFtenminsargwatt[ejsTFtenminsargwatt.length-1]%></div>
+                <% var ejsTFyearstotalwatt = JSON.parse(TFyearstotalwatt);%>
+                <div style="visibility: hidden;" id="TFyeartotalwatt"><%=ejsTFyearstotalwatt[ejsTFyearstotalwatt.length-1]%></div>
+                <% var ejsTFhoursargwatt = JSON.parse(TFhourargwatt);%>
+                <div style="visibility: hidden;" id="TFhourargwatt"><%=ejsTFhoursargwatt[ejsTFhoursargwatt.length-1]%></div>
+                <% var ejsTFhourstotalwatt = JSON.parse(TFhourtotalwatt);%>
+                <div style="visibility: hidden;" id="TFhourtotalwatt"><%=ejsTFhourstotalwatt[ejsTFhourstotalwatt.length-1]%></div>
+                <% var ejsAChumarrays = JSON.parse(AChumarrays);%>
+                <div style="visibility: hidden;" id="ACtenminwatt"><%=ejsAChumarrays[ejsAChumarrays.length-1]%></div>
+            </div>
+            <div class="Control">
+                <div class="control_text">電源控制</div>
+                <div class="control_content">
+                    <div class="switch_content1">
+                        <div class="switch_text">冷氣</div>
+                        <div class="switch">
+                            <input type="checkbox" id="airconditioner" class="switch_button" autocomplete="off"
+                                name="myswitch">
+                            <label class="switch_lb" id="airconditioner_lb" for="airconditioner"
+                                onclick="btncontrol(this,'airconditioner')">OFF</label>
+                        </div>
+                    </div>
+                    <div class="switch_content2">
+                        <div class="switch_text">電燈0</div>
+                        <div class="switch">
+                            <input type="checkbox" id="light0" class="switch_button" autocomplete="off" name="myswitch">
+                            <label class="switch_lb" id="light0_lb" for="light0"
+                                onclick="btncontrol(this,'light0')">OFF</label>
+                        </div>
+                    </div>
+                    <div class="switch_content3">
+                        <div class="switch_text">電燈1</div>
+                        <div class="switch">
+                            <input type="checkbox" id="light1" class="switch_button" autocomplete="off" name="myswitch">
+                            <label class="switch_lb" id="light1_lb" for="light1"
+                                onclick="btncontrol(this,'light1')">OFF</label>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    <%-include('layouts/scripts');-%>
-    <script>
-        const btnon = document.getElementById('BtnOn')
-        const btnoff = document.getElementById('BtnOff')
-        var socket = io.connect();
-        setInterval(() => {
-            $("#value").load("https://murmuring-temple-18681.herokuapp.com/" + " #value");
-            // $("#value").load("http://localhost:4000/" + " #value");
-        }, 10000);
-        var Watt = document.getElementById('Watt-Value').innerHTML;
-        var Dates = document.getElementById('Time-Value').innerHTML;
-        var ctx = document.getElementById('myChart');
-        var xdata = [];
-        var ydata = [];
-        xdata = "<%-date%>".split(",");
-        ydata = "<%-watt%>".split(",");
-        var MyChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: xdata,
-                datasets: [{
-                    label: '用電量(kW)',
-                    data: ydata,
-                    backgroundColor: 'rgba(111, 163, 204, 0.5)',
-                    borderColor: '#6FA3CC',
-                    scales: {
-                        yAxes: [{
-                            display: true,
-                            ticks: {
-                                suggestedMin: 0,
-                                suggestedMax: 5,
-                                beginAtZero: true
-                            }
-                        }]
-                    }
-                }]
-            }
-        });
-        MyChart;
-        var Timer = setInterval(function () {
-            Watt = document.getElementById('Watt-Value').innerHTML;
-            Dates = document.getElementById('Time-Value').innerHTML;
-            if (xdata[xdata.length - 1] != Dates) {
-                updateData(MyChart, Watt, Dates)
-            }
-        }, 1000)
-
-        function updateData(MyChart, watt, date) {
-            ydata.push(watt);
-            xdata.push(date);
-            ydata.shift();
-            xdata.shift();
-            MyChart.update();
-        }
-
-        $(btnon).click(function () {
-            value = 1
-            socket.emit('on', value);
-        });
-
-        $(btnoff).click(function () {
-            value = 2
-            socket.emit('off', value);
-        });
-    </script>
 </body>
+<%-include('layouts/scripts');-%>
+<script>
+    const light = document.getElementById('light');
+    setInterval(() => {
+        $("#value").load("https://murmuring-temple-18681.herokuapp.com/" + " #value");
+        //$("#value").load("http://localhost:4000/" + " #value");
+    }, 10000);
+    var socket = io.connect();
+    // ----- Test Datas -----
+    var minutesargdata = [];
+    var hoursargdata = [];
+    var hourstotaldata = [];
+    var yearstotaldata = [];
+    var data1 = [];
+    var data2 = [];
+    var data3 = [];
+    var data4 = [];
+    var nulldata = [];
+    var EMtenminsargwatt = [],
+        EMhourargwatt = [],
+        EMyeartotalwatt = [],
+        EMhourtotalwatt = [],
+        EMdayswatt = [],
+        TFtenminsargwatt = [],
+        TFhourargwatt = [],
+        TFyeartotalwatt = [],
+        TFhourtotalwatt = [],
+        TFdayswatt = [],
+        ACHumarray = [];
+    var EMtenminsdate = [],
+        EMhoursdate = [],
+        EMdaysdate = [];
+    EMtenminsargwatt = "<%-ejsEMtenminsargwatt%>".split(",");
+    TFtenminsargwatt = "<%-ejsTFtenminsargwatt%>".split(",");
+    EMyeartotalwatt = "<%-ejsEMyearstotalwatt%>".split(",");
+    TFyeartotalwatt = "<%-ejsTFyearstotalwatt%>".split(",");
+    EMhourtotalwatt = "<%-ejsEMhourstotalwatt%>".split(",");
+    TFhourtotalwatt = "<%-ejsTFhourstotalwatt%>".split(",");
+    ACHumarray = "<%-ejsAChumarrays%>".split(",");
+    EMhourargwatt = "<%-ejsEMhoursargwatt%>".split(",");
+    TFhourargwatt = "<%-ejsTFhoursargwatt%>".split(",");
+    minutesargdata = [EMtenminsargwatt, TFtenminsargwatt];
+    hoursargdata = [EMhourargwatt,TFhourargwatt,ACHumarray];
+    hourstotaldata = [EMhourtotalwatt,TFhourtotalwatt]
+    yearstotaldata = [EMyeartotalwatt,TFyeartotalwatt]
+    setInterval(() => {
+        if (minutesarg_text[minutesarg_text.length - 1] != document.getElementById('EMtenmindate').innerHTML) {
+            EMtenminsargwatt.push(document.getElementById('EMtenminargwatt').innerHTML);
+            TFtenminsargwatt.push(document.getElementById('TFtenminargwatt').innerHTML);      
+            ACHumarray.push(document.getElementById('ACtenminwatt').innerHTML);
+            EMtenminsargwatt.shift();
+            TFtenminsargwatt.shift();
+            ACHumarray.shift();
+            minutesarg_text.push(document.getElementById('EMtenmindate').innerHTML);
+            minutesarg_text.shift();
+            minutesargdata = [EMtenminsargwatt, TFtenminsargwatt];
+            myChart.update();
+        }else if(hoursarg_text[hoursarg_text.length - 1] != document.getElementById('EMhourdate').innerHTML){
+            EMhourargwatt.push(document.getElementById('EMhourargwatt').innerHTML);
+            TFhourargwatt.push(document.getElementById('TFhourargwatt').innerHTML);
+            EMhourtotalwatt.push(document.getElementById('EMhourtotalwatt').innerHTML);
+            TFhourtotalwatt.push(document.getElementById('TFhourtotalwatt').innerHTML);
+            EMhourtotalwatt.shift();
+            TFhourtotalwatt.shift();
+            EMhourargwatt.shift();
+            TFhourargwatt.shift();
+            hoursarg_text.push(document.getElementById('EMhourdate').innerHTML);
+            hoursarg_text.shift();
+            hoursargdata=[EMhourargwatt,TFhourargwatt,ACHumarray];
+            hourstotaldata = [EMhourtotalwatt,TFhourtotalwatt];
+            myChart.update();
+        }else if(days_text[days_text.length - 1] != document.getElementById('EMyeardate').innerHTML){
+            EMyeartotalwatt.push(document.getElementById('EMhourtotalwatt').innerHTML);
+            TFyeartotalwatt.push(document.getElementById('TFhourtotalwatt').innerHTML);
+            EMyeartotalwatt.shift();
+            TFyeartotalwatt.shift();
+            days_text.push(document.getElementById('EMyeardate').innerHTML);
+            days_text.shift();
+            yearstotaldata = [EMyeartotalwatt,TFyeartotalwatt];
+            myChart.update();
+        }
+    }, 1000);
+    var Shelly1_Datas = {
+        minutes: minutesargdata[0],
+        hours: hoursargdata[0],
+        days: hourstotaldata[0],
+        weeks: yearstotaldata[0]
+    };
+    var Shelly2_Datas = {
+        minutes: minutesargdata[1],
+        hours: hoursargdata[1],
+        days: hourstotaldata[1],
+        weeks: yearstotaldata[1]
+    };
+    var Shelly3_Datas = {
+        minutes: minutesargdata[2],
+        hours: hoursargdata[2],
+        days: hourstotaldata[2],
+        weeks: yearstotaldata[2]
+    };
+    // console.log("Shelly1", Shelly1_Datas);
+    // console.log("Shelly2", Shelly2_Datas);
+    // console.log("Shelly3", Shelly3_Datas);
+    // ----- End Line -----
+
+    // ----- Main Part -----
+    window.shellyNum = 0;
+    window.rangeNum = 0;
+
+    const minutesarg_text = '<%-ejsEMtenminsdate%>'.split(",");
+
+    const hoursarg_text = '<%-ejsEMhoursdate%>'.split(",");
+
+    const days_text = '<%-ejsEMyearsdate%>'.split(",");
+    const weeks_text = ['Week1', 'Week2', 'Week3', 'Week4'];
+    window.chartLabels = minutesarg_text; // 預設檢視範圍 : 過去一小時
+
+    window.Datas = Shelly1_Datas.minutes;
+
+    var chartlabel = '當前功率w';
+    // 初始化 Chart
+    var ctx = document.getElementById("chartPlot");
+    var myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: window.chartLabels,
+            datasets: [{
+                label: chartlabel,
+                data: window.Datas,
+                backgroundColor: 'rgba(111, 163, 204, 0.5)',
+                borderColor: '#6FA3CC',
+                scales: {
+                    yAxes: [{
+                        display: true,
+                        ticks: {
+                            suggestedMin: 0,
+                            suggestedMax: 100000,
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+
+    // Change power watch ( shelly ) 
+    function shelly_check(checkbox, num) {
+        // single selection
+        var checkbox1 = document.getElementsByName('shelly_check');
+        checkbox1.forEach((item) => {
+            if (item != checkbox) item.checked = false;
+        })
+        socket.emit('btnSW', num);
+        //$("#value").load("http://localhost:4000/" + " #value");
+        $("#value").load("https://murmuring-temple-18681.herokuapp.com/" + " #value");
+        if (num == 0) {
+            window.shellyNum = 0;
+        } else if (num == 1) {
+            window.shellyNum = 1;
+        } else {
+            window.shellyNum = 2;
+        }
+        setChart(window.shellyNum, window.rangeNum);
+        myChart.update();
+    }
+
+    // Change range
+    function range_check(checkbox, num) {
+        // single selection
+        var checkbox2 = document.getElementsByName('range_check')
+        checkbox2.forEach((item) => {
+            if (item != checkbox) item.checked = false;
+        })
+        window.rangeNum = num;
+        if (num == 0){
+          window.chartLabels = minutesarg_text;
+          chartlabel = "當前功率w";
+        } 
+        else if (num == 1){
+           window.chartLabels = hoursarg_text;
+           chartlabel = "當前功率w";
+        } 
+        else if (num == 2){
+           window.chartLabels = hoursarg_text;
+           chartlabel = "累計損耗功率kwh"
+        } 
+        else{
+           window.chartLabels = days_text; 
+           chartlabel = "累計損耗功率kwh"
+        } 
+
+        myChart.data.labels = window.chartLabels;
+        myChart.data.datasets[0].label = chartlabel;
+        setChart(window.shellyNum, window.rangeNum);
+
+        myChart.update();
+    }
+    // set chart
+    function setChart(shelly, range) {
+        if (shelly == 0) {
+            if (range == 0) window.Datas = Shelly1_Datas.minutes;
+            else if (range == 1) window.Datas = Shelly1_Datas.hours;
+            else if (range == 2) window.Datas = Shelly1_Datas.days;
+            else window.Datas = Shelly1_Datas.weeks;
+        } else if (shelly == 1) {
+            if (range == 0) window.Datas = Shelly2_Datas.minutes;
+            else if (range == 1) window.Datas = Shelly2_Datas.hours;
+            else if (range == 2) window.Datas = Shelly2_Datas.days;
+            else window.Datas = Shelly2_Datas.weeks;
+        } else if (shelly == 2) {
+            if (range == 0) window.Datas = Shelly3_Datas.minutes;
+            else if (range == 1) window.Datas = Shelly3_Datas.hours;
+            else if (range == 2) window.Datas = Shelly3_Datas.days;
+            else window.Datas = Shelly3_Datas.weeks;
+        }
+        myChart.data.datasets[0].data = window.Datas;
+    }
+
+    // Power Control BTN
+    function btncontrol(obj, btnid) {
+        var checked = document.getElementById(btnid).checked;
+        if (!checked) {
+            document.getElementById(obj.id).innerText = "ON";
+            if (btnid == "light0") {
+                socket.emit('TF0on');
+            } else if (btnid == "light1") {
+                socket.emit('TF1on');
+            } else if (btnid == "airconditioner") {
+                socket.emit('ACon');
+            }
+        } else {
+            document.getElementById(obj.id).innerText = "OFF";
+            if (btnid == "light0") {
+                socket.emit('TF0off');
+            } else if (btnid == "light1") {
+                socket.emit('TF1off');
+            } else if (btnid == "airconditioner") {
+                socket.emit('ACoff');
+            }
+        }
+    }
+
+    // Nav Bar Scrolling response
+    $(window).scroll(function () {
+        if (this.scrollY > 20) $('.Title').addClass("show");
+        else $('.Title').removeClass("show");
+    })
+</script>
 
 </html>

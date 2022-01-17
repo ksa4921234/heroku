@@ -6,13 +6,17 @@ const mongoose = require('mongoose');
 
 const EMPowernow = require('./models/EMPowernow.js')
 const EMPowertenmin = require('./models/EMPowertemin.js')
+const EMPoweryear = require('./models/EMPoweryear.js')
 const EMPowerhour = require('./models/EMPowerhours.js')
 const EMPowerday = require('./models/EMPowerdays.js')
 const TFPowernow = require('./models/TFPowernow.js')
 const TFPowertenmin = require('./models/TFPowertemin.js')
+const TFPoweryear = require('./models/TFPoweryear.js')
 const TFPowerhour = require('./models/TFPowerhours.js')
 const TFPowerday = require('./models/TFPowerdays.js')
 const ACPost = require('./models/ACPost.js')
+
+
 var $ = require("jquery");
 var mqtt = require('mqtt');
 const {
@@ -39,10 +43,12 @@ app.use(express.urlencoded())
 app.get('/', async (req, res) => {
     const EMPowernows = await EMPowernow.find({})
     const EMPowertenmins = await EMPowertenmin.find({})
+    const EMPoweryears = await EMPoweryear.find({})
     const EMPowerhours = await EMPowerhour.find({})
     const EMPowerdays = await EMPowerday.find({})
     const TFPowernows = await TFPowernow.find({})
     const TFPowertenmins = await TFPowertenmin.find({})
+    const TFPoweryears = await TFPoweryear.find({})
     const TFPowerhours = await TFPowerhour.find({})
     const TFPowerdays = await TFPowerday.find({})
     const ACPosts = await ACPost.find({})
@@ -65,6 +71,19 @@ app.get('/', async (req, res) => {
     EMtenminsargwatts = JSON.stringify(EMtenminsargwatts);
     EMtenminstotalwatts = JSON.stringify(EMtenminstotalwatts);
     EMtenminsdates = JSON.stringify(EMtenminsdates);
+    //EM半小時
+    var EMyearstotalwatts = [],
+        EMyearsdates = [];
+    EMyearstotalwatts[0] = (EMPoweryears[0].長時間總共功率/1000).toFixed(2);
+    EMyearsdates[0] = EMPoweryears[0].createdAt.getDate() + "日";
+    for (i = 1; i < EMPoweryears.length; i++) {
+        EMyearstotalwatts[i] = (EMPoweryears[i].長時間總共功率 / 1000).toFixed(2);
+        EMyearsdates[i] = "";
+    }
+    EMyearstotalwatts[EMPoweryears.length] = (EMPoweryears[EMPoweryears.length - 1].長時間總共功率/1000).toFixed(2);
+    EMyearsdates[EMPoweryears.length] = EMPoweryears[EMPoweryears.length - 1].createdAt.getDate() + "日";
+    EMyearstotalwatts = JSON.stringify(EMyearstotalwatts);
+    EMyearsdates = JSON.stringify(EMyearsdates);
     //EM一小時
     var EMhourargwatts = [],
         EMhourtotalwatts = [],
@@ -102,6 +121,19 @@ app.get('/', async (req, res) => {
     }
     TFtenminsargwatts = JSON.stringify(TFtenminsargwatts);
     TFtenminstotalwatts = JSON.stringify(TFtenminstotalwatts);
+    //TF半小時
+    var TFyearstotalwatts = [],
+        TFyearsdates = [];
+    TFyearstotalwatts[0] = (TFPoweryears[0].長時間總共功率/1000).toFixed(2)
+    TFyearsdates[0] = TFPoweryears[0].createdAt.getDate() + "日";
+    for (i = 1; i < TFPoweryears.length; i++) {
+        TFyearstotalwatts[i] = (TFPoweryears[i].長時間總共功率 / 1000).toFixed(2);
+        TFyearsdates[i] = "";
+    }
+    TFyearstotalwatts[TFPoweryears.length] = (TFPoweryears[TFPoweryears.length - 1].長時間總共功率/1000).toFixed(2);
+    TFyearsdates[TFPoweryears.length] = TFPoweryears[TFPoweryears.length - 1].createdAt.getDate() + "日";
+    TFyearstotalwatts = JSON.stringify(TFyearstotalwatts);
+    TFyearsdates = JSON.stringify(TFyearsdates);
     //TF小時
     var TFhourargwatts = [],
         TFhourtotalwatts = [];
@@ -152,15 +184,17 @@ app.get('/', async (req, res) => {
         nowsendfive = AChum + " %";
     }
 
-    res.render('index2', {
+    res.render('index', {
         EMPowernow: EMPowernows,
         EMnowwatt: EMnowwatt,
         EMnowdate: EMnowdate,
         EMtenminsargwatt: EMtenminsargwatts,
         EMtenminstotalwatt: EMtenminstotalwatts,
+        EMyearstotalwatt: EMyearstotalwatts,
+        EMyearsdate: EMyearsdates,
+        EMtenminsdate: EMtenminsdates,
         EMhourargwatt: EMhourargwatts,
         EMhourtotalwatt: EMhourtotalwatts,
-        EMtenminsdate: EMtenminsdates,
         EMhoursdate: EMhoursdates,
 
         TFPowernow: TFPowernows,
@@ -168,6 +202,8 @@ app.get('/', async (req, res) => {
         TFnowdate: TFnowdate,
         TFtenminsargwatt: TFtenminsargwatts,
         TFtenminstotalwatt: TFtenminstotalwatts,
+        TFyearstotalwatt: TFyearstotalwatts,
+        TFyearsdate: TFyearsdates,
         TFhourargwatt: TFhourargwatts,
         TFhourtotalwatt: TFhourtotalwatts,
 
