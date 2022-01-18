@@ -175,7 +175,7 @@
     EMhourargwatt = "<%-ejsEMhoursargwatt%>".split(",");
     TFhourargwatt = "<%-ejsTFhoursargwatt%>".split(",");
     minutesargdata = [EMtenminsargwatt, TFtenminsargwatt];
-    hoursargdata = [EMhourargwatt,TFhourargwatt,ACHumarray];
+    hoursargdata = [EMhourargwatt,TFhourargwatt];
     hourstotaldata = [EMhourtotalwatt,TFhourtotalwatt]
     yearstotaldata = [EMyeartotalwatt,TFyeartotalwatt]
     setInterval(() => {
@@ -201,7 +201,7 @@
             TFhourargwatt.shift();
             hoursarg_text.push(document.getElementById('EMhourdate').innerHTML);
             hoursarg_text.shift();
-            hoursargdata=[EMhourargwatt,TFhourargwatt,ACHumarray];
+            hoursargdata=[EMhourargwatt,TFhourargwatt];
             hourstotaldata = [EMhourtotalwatt,TFhourtotalwatt];
             myChart.update();
         }else if(days_text[days_text.length - 1] != document.getElementById('EMyeardate').innerHTML){
