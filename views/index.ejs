@@ -26,8 +26,8 @@
                 <form name="select-form">
                     <div class="shelly_selection">
                         <div class="select-text">檢視電錶:</div>
-                        <input type="checkbox" id="shelly1" class="shelly-button" autocomplete="off" name="shelly_check"
-                            checked=true>
+                        <input type="checkbox" id="shelly1" class="shelly-button" autocomplete="off" 
+                            name="shelly_check" checked=true>
                         <label id="shelly1_lb" for="shelly1" onclick="shelly_check(this,0)">ShellyEM</label>
                         <input type="checkbox" id="shelly2" class="shelly-button" autocomplete="off"
                             name="shelly_check">
@@ -38,19 +38,25 @@
                     </div>
                     <div class="range_selection">
                         <div class="range-text">檢視範圍:</div>
-                        <input type="checkbox" id="hourbefore" class="range-button" autocomplete="off"
+                        <input type="checkbox" id="hour_arg" class="range-button" autocomplete="off"
                             name="range_check" checked=true>
-                        <label id="hourbefore_lb" for="hourbefore" onclick="range_check(this,0)">一小時內設備使用功率</label>
-                        <input type="checkbox" id="daybefore" class="range-button" autocomplete="off"
+                        <label id="hourbefore_lb" for="hour_arg" onclick="range_check(this,0)">一小時內設備使用功率</label>
+                        <input type="checkbox" id="day_arg" class="range-button" autocomplete="off"
                             name="range_check">
-                        <label id="daybefore_lb" for="daybefore" onclick="range_check(this,1)">24小時內設備使用功率</label>
-                        <br>
-                        <input type="checkbox" id="weekbefore" class="range-button" autocomplete="off"
+                        <label id="daybefore_lb" for="day_arg" onclick="range_check(this,1)">24小時內設備使用功率</label>
+                        <input type="checkbox" id="all_arg" class="range-button" autocomplete="off"
                             name="range_check">
-                        <label id="weekbefore_lb" for="weekbefore" onclick="range_check(this,2)">過去24小時累計損耗電能</label>
-                        <input type="checkbox" id="monthbefore" class="range-button" autocomplete="off"
+                        <label id="allbefore_lb" for="all_arg" onclick="range_check(this,2)">過去設備使用功率</label>
+                        <br> 
+                        <input type="checkbox" id="hour_total" class="range-button" autocomplete="off"
+                        name="range_check">
+                        <label id="hourbefore_lb" for="hour_total" onclick="range_check(this,3)">一小時內累計損耗電能</label>
+                        <input type="checkbox" id="day_total" class="range-button" autocomplete="off"
                             name="range_check">
-                        <label id="monthbefore_lb" for="monthbefore" onclick="range_check(this,3)">目前總計損耗電能</label>
+                        <label id="daybefore_lb" for="day_total" onclick="range_check(this,4)">過去24小時累計損耗電能</label>
+                        <input type="checkbox" id="all_total" class="range-button" autocomplete="off"
+                            name="range_check">
+                        <label id="allbefore_lb" for="all_total" onclick="range_check(this,5)">目前總計損耗電能</label>
                     </div>
                 </form>
             </div>
@@ -60,45 +66,66 @@
         </div>
         <div class="Side">
             <div class="Digital" id="value">
-                <div class="digital_text"><%=nowsendfirsts%></div>
+                <div class="digital_text"><%=now_send_first_ejs%></div>
                 <div class="digital_content">
                     <div class="watt" id="EMwatt" style="display:flex">
-                        <div class="watt_text"><%=nowsendsecs%></div>
-                        <div class="watt_value"><%=nowsendthirds%></div>
+                        <div class="watt_text"><%=now_send_second_ejs%></div>
+                        <div class="watt_value"><%=now_send_third_ejs%></div>
                     </div>
                     <div class="voltage" id="EMvoltage">
-                        <div class="voltage_text"><%=nowsendfours%></div>
-                        <div class="voltage_value"><%=nowsendfives%></div>
+                        <div class="voltage_text"><%=now_send_four_ejs%></div>
+                        <div class="voltage_value"><%=now_send_five_ejs%></div>
                     </div>
                 </div>
                 <div class="lasttime">
                     <div class="lasttime_text">上次更新 :</div>
-                    <div class="lasttime_value"><%=EMnowdate%><span class="cycle">(每20秒更新一次)</span></div>
+                    <div class="lasttime_value"><%=EM_now_date_ejs%><span class="cycle">(每20秒更新一次)</span></div>
                 </div>
-                <% var ejsEMtenminsargwatt = JSON.parse(EMtenminsargwatt);%>
-                <div style="visibility: hidden;" id="EMtenminargwatt"><%=ejsEMtenminsargwatt[ejsEMtenminsargwatt.length-1]%></div>
-                <% var ejsEMyearstotalwatt = JSON.parse(EMyearstotalwatt);%>
-                <div style="visibility: hidden;" id="EMyeartotalwatt"><%=ejsEMyearstotalwatt[ejsEMyearstotalwatt.length-1]%></div>
-                <% var ejsEMyearsdate = JSON.parse(EMyearsdate);%>
-                <div style="visibility: hidden;" id="EMyeardate"><%=ejsEMyearsdate[ejsEMyearsdate.length-1]%></div>
-                <% var ejsEMtenminsdate = JSON.parse(EMtenminsdate);%>
-                <div style="visibility: hidden;" id="EMtenmindate"><%=ejsEMtenminsdate[ejsEMtenminsdate.length-1]%></div>
-                <% var ejsEMhoursargwatt = JSON.parse(EMhourargwatt);%>
-                <div style="visibility: hidden;" id="EMhourargwatt"><%=ejsEMhoursargwatt[ejsEMhoursargwatt.length-1]%></div>
-                <% var ejsEMhourstotalwatt = JSON.parse(EMhourtotalwatt);%>
-                <div style="visibility: hidden;" id="EMhourtotalwatt"><%=ejsEMhourstotalwatt[ejsEMhourstotalwatt.length-1]%></div>
-                <% var ejsEMhoursdate = JSON.parse(EMhoursdate);%>
-                <div style="visibility: hidden;" id="EMhourdate"><%=ejsEMhoursdate[ejsEMhoursdate.length-1]%></div>
-                <% var ejsTFtenminsargwatt = JSON.parse(TFtenminsargwatt);%>
-                <div style="visibility: hidden;" id="TFtenminargwatt"><%=ejsTFtenminsargwatt[ejsTFtenminsargwatt.length-1]%></div>
-                <% var ejsTFyearstotalwatt = JSON.parse(TFyearstotalwatt);%>
-                <div style="visibility: hidden;" id="TFyeartotalwatt"><%=ejsTFyearstotalwatt[ejsTFyearstotalwatt.length-1]%></div>
-                <% var ejsTFhoursargwatt = JSON.parse(TFhourargwatt);%>
-                <div style="visibility: hidden;" id="TFhourargwatt"><%=ejsTFhoursargwatt[ejsTFhoursargwatt.length-1]%></div>
-                <% var ejsTFhourstotalwatt = JSON.parse(TFhourtotalwatt);%>
-                <div style="visibility: hidden;" id="TFhourtotalwatt"><%=ejsTFhourstotalwatt[ejsTFhourstotalwatt.length-1]%></div>
-                <% var ejsAChumarrays = JSON.parse(AChumarrays);%>
-                <div style="visibility: hidden;" id="ACtenminwatt"><%=ejsAChumarrays[ejsAChumarrays.length-1]%></div>
+                <% var EM_tenmin_arg_watt_plot = JSON.parse(EM_tenmin_arg_watt_ejs);%>
+                <div style="visibility: hidden;" id="EM_tenmin_arg_watt_id"><%=EM_tenmin_arg_watt_plot[EM_tenmin_arg_watt_plot.length-1]%></div>
+
+                <% var EM_tenmin_total_watt_plot = JSON.parse(EM_tenmin_total_watt_ejs);%>
+                <div style="visibility: hidden;" id="EM_tenmin_total_watt_id"><%=EM_tenmin_total_watt_plot[EM_tenmin_total_watt_plot.length-1]%></div>
+
+                <% var EM_tenmin_date_plot = JSON.parse(EM_tenmin_date_ejs);%>
+                <div style="visibility: hidden;" id="EM_tenmin_date_id"><%=EM_tenmin_date_plot[EM_tenmin_date_plot.length-1]%></div>
+
+                <% var EM_thirtymin_arg_watt_plot = JSON.parse(EM_thirtymin_arg_watt_ejs);%>
+                <div style="visibility: hidden;" id="EM_thirtymin_arg_watt_id"><%=EM_thirtymin_arg_watt_plot[EM_thirtymin_arg_watt_plot.length-1]%></div>
+
+                <% var EM_thirtymin_total_watt_plot = JSON.parse(EM_thirtymin_total_watt_ejs);%>
+                <div style="visibility: hidden;" id="EM_thirtymin_total_watt_id"><%=EM_thirtymin_total_watt_plot[EM_thirtymin_total_watt_plot.length-1]%></div>
+
+                <% var EM_thirtymin_date_plot = JSON.parse(EM_thirtymin_date_ejs);%>
+                <div style="visibility: hidden;" id="EM_thirtymin_date_id"><%=EM_thirtymin_date_plot[EM_thirtymin_date_plot.length-1]%></div>
+
+                <% var EM_hour_arg_watt_plot = JSON.parse(EM_hour_arg_watt_ejs);%>
+                <div style="visibility: hidden;" id="EM_hour_arg_watt_id"><%=EM_hour_arg_watt_plot[EM_hour_arg_watt_plot.length-1]%></div>
+
+                <% var EM_hour_total_watt_plot = JSON.parse(EM_hour_total_watt_ejs);%>
+                <div style="visibility: hidden;" id="EM_hour_total_watt_id"><%=EM_hour_total_watt_plot[EM_hour_total_watt_plot.length-1]%></div>
+
+                <% var EM_hour_date_plot = JSON.parse(EM_hour_date_ejs);%>
+                <div style="visibility: hidden;" id="EM_hour_date_id"><%=EM_hour_date_plot[EM_hour_date_plot.length-1]%></div>
+
+                <% var TF_tenmin_arg_watt_plot = JSON.parse(TF_tenmin_arg_watt_ejs);%>
+                <div style="visibility: hidden;" id="TF_tenmin_arg_watt_id"><%=TF_tenmin_arg_watt_plot[TF_tenmin_arg_watt_plot.length-1]%></div>
+
+                <% var TF_tenmin_total_watt_plot = JSON.parse(TF_tenmin_total_watt_ejs);%>
+                <div style="visibility: hidden;" id="TF_tenmin_total_watt_id"><%=TF_tenmin_total_watt_plot[TF_tenmin_total_watt_plot.length-1]%></div>
+
+                <% var TF_thirtymin_arg_watt_plot = JSON.parse(TF_thirtymin_arg_watt_ejs);%>
+                <div style="visibility: hidden;" id="TF_thirtymin_arg_watt_id"><%=TF_thirtymin_arg_watt_plot[TF_thirtymin_arg_watt_plot.length-1]%></div>
+
+                <% var TF_thirtymin_total_watt_plot = JSON.parse(TF_thirtymin_total_watt_ejs);%>
+                <div style="visibility: hidden;" id="TF_thirtymin_total_watt_id"><%=TF_thirtymin_total_watt_plot[TF_thirtymin_total_watt_plot.length-1]%></div>
+
+                <% var TF_hour_arg_watt_plot = JSON.parse(TF_hour_arg_watt_ejs);%>
+                <div style="visibility: hidden;" id="TF_hour_arg_watt_id"><%=TF_hour_arg_watt_plot[TF_hour_arg_watt_plot.length-1]%></div>
+
+                <% var TF_hour_total_watt_plot = JSON.parse(TF_hour_total_watt_ejs);%>
+                <div style="visibility: hidden;" id="TF_hour_total_watt_id"><%=TF_hour_total_watt_plot[TF_hour_total_watt_plot.length-1]%></div>
+
             </div>
             <div class="Control">
                 <div class="control_text">電源控制</div>
@@ -142,115 +169,130 @@
     }, 10000);
     var socket = io.connect();
     // ----- Test Datas -----
-    var minutesargdata = [];
-    var hoursargdata = [];
-    var hourstotaldata = [];
-    var yearstotaldata = [];
-    var data1 = [];
-    var data2 = [];
-    var data3 = [];
-    var data4 = [];
-    var nulldata = [];
-    var EMtenminsargwatt = [],
-        EMhourargwatt = [],
-        EMyeartotalwatt = [],
-        EMhourtotalwatt = [],
-        EMdayswatt = [],
-        TFtenminsargwatt = [],
-        TFhourargwatt = [],
-        TFyeartotalwatt = [],
-        TFhourtotalwatt = [],
-        TFdayswatt = [],
-        ACHumarray = [];
-    var EMtenminsdate = [],
-        EMhoursdate = [],
-        EMdaysdate = [];
-    EMtenminsargwatt = "<%-ejsEMtenminsargwatt%>".split(",");
-    TFtenminsargwatt = "<%-ejsTFtenminsargwatt%>".split(",");
-    EMyeartotalwatt = "<%-ejsEMyearstotalwatt%>".split(",");
-    TFyeartotalwatt = "<%-ejsTFyearstotalwatt%>".split(",");
-    EMhourtotalwatt = "<%-ejsEMhourstotalwatt%>".split(",");
-    TFhourtotalwatt = "<%-ejsTFhourstotalwatt%>".split(",");
-    ACHumarray = "<%-ejsAChumarrays%>".split(",");
-    EMhourargwatt = "<%-ejsEMhoursargwatt%>".split(",");
-    TFhourargwatt = "<%-ejsTFhoursargwatt%>".split(",");
-    minutesargdata = [EMtenminsargwatt, TFtenminsargwatt];
-    hoursargdata = [EMhourargwatt,TFhourargwatt];
-    hourstotaldata = [EMhourtotalwatt,TFhourtotalwatt]
-    yearstotaldata = [EMyeartotalwatt,TFyeartotalwatt]
+    var EM_tenmin_arg_watt_array = [],
+        EM_tenmin_total_watt_array = [],
+        EM_thirtymin_arg_watt_array = [],
+        EM_thirtymin_total_watt_array = [],
+        EM_hour_arg_watt_array = [],
+        EM_hour_total_watt_array = [];
+
+    var TF_tenmin_arg_watt_array = [],
+        TF_tenmin_total_watt_array = [],
+        TF_thirtymin_arg_watt_array = [],
+        TF_thirtymin_total_watt_array = [],
+        TF_hour_arg_watt_array = [],
+        TF_hour_total_watt_array = [];
+
+    var EM_tenmin_date_array = [],
+        EM_thirtymin_date_array = [],
+        EM_hour_date_ejs = [];
+
+    var EMTF_tenmin_arg_data = [],
+        EMTF_tenmin_total_data = [];
+    var EMTF_thirtymin_arg_data = [],
+        EMTF_thirtymin_total_data = [];
+    var EMTF_hour_arg_data = [],
+        EMTF_hour_total_data = [];
+
+    EM_tenmin_arg_watt_array = "<%-EM_tenmin_arg_watt_plot%>".split(",");
+    EM_tenmin_total_watt_array = "<%-EM_tenmin_total_watt_plot%>".split(",");
+    EM_thirtymin_arg_watt_array = "<%-EM_thirtymin_arg_watt_plot%>".split(",");
+    EM_thirtymin_total_watt_array = "<%-EM_thirtymin_total_watt_plot%>".split(",");
+    EM_hour_arg_watt_array = "<%-EM_hour_arg_watt_plot%>".split(",");
+    EM_hour_total_watt_array = "<%-EM_hour_total_watt_plot%>".split(",");
+    TF_tenmin_arg_watt_array = "<%-TF_tenmin_arg_watt_plot%>".split(",");
+    TF_tenmin_total_watt_array = "<%-TF_tenmin_total_watt_plot%>".split(",");
+    TF_thirtymin_arg_watt_array = "<%-TF_thirtymin_arg_watt_plot%>".split(",");
+    TF_thirtymin_total_watt_array = "<%-TF_thirtymin_total_watt_plot%>".split(",");
+    TF_hour_arg_watt_array = "<%-TF_hour_arg_watt_plot%>".split(",");
+    TF_hour_total_watt_array = "<%-TF_hour_total_watt_plot%>".split(",");
+
+    EMTF_tenmin_arg_data = [EM_tenmin_arg_watt_array, TF_tenmin_arg_watt_array];
+    EMTF_tenmin_total_data = [EM_tenmin_total_watt_array, TF_tenmin_total_watt_array];
+    EMTF_thirtymin_arg_data = [EM_thirtymin_arg_watt_array, TF_thirtymin_arg_watt_array]
+    EMTF_thirtymin_total_data = [EM_thirtymin_total_watt_array, TF_thirtymin_total_watt_array];
+    EMTF_hour_arg_data = [EM_hour_arg_watt_array, TF_hour_arg_watt_array];
+    EMTF_hour_total_data = [EM_hour_total_watt_array, TF_hour_total_watt_array];
+    const EMTF_tenmin_date_axis = '<%-EM_tenmin_date_plot%>'.split(",");
+    console.log(EMTF_tenmin_date_axis)
+    const EMTF_thirtymin_date_axis = '<%-EM_thirtymin_date_plot%>'.split(",");
+    const EMTF_hour_date_axis = '<%-EM_hour_date_plot%>'.split(",");
     setInterval(() => {
-        if (minutesarg_text[minutesarg_text.length - 1] != document.getElementById('EMtenmindate').innerHTML) {
-            EMtenminsargwatt.push(document.getElementById('EMtenminargwatt').innerHTML);
-            TFtenminsargwatt.push(document.getElementById('TFtenminargwatt').innerHTML);      
-            ACHumarray.push(document.getElementById('ACtenminwatt').innerHTML);
-            EMtenminsargwatt.shift();
-            TFtenminsargwatt.shift();
-            ACHumarray.shift();
-            minutesarg_text.push(document.getElementById('EMtenmindate').innerHTML);
-            minutesarg_text.shift();
-            minutesargdata = [EMtenminsargwatt, TFtenminsargwatt];
+        if (EMTF_tenmin_date_axis[EMTF_tenmin_date_axis.length - 1] != document.getElementById('EM_tenmin_date_id').innerHTML) {
+            EM_tenmin_arg_watt_array.push(document.getElementById('EM_tenmin_arg_watt_id').innerHTML);
+            TF_tenmin_arg_watt_array.push(document.getElementById('TF_tenmin_arg_watt_id').innerHTML);
+            EM_tenmin_total_watt_array.push(document.getElementById('EM_tenmin_total_watt_id').innerHTML);
+            TF_tenmin_total_watt_array.push(document.getElementById('TF_tenmin_total_watt_id').innerHTML);
+
+            EM_tenmin_arg_watt_array.shift();
+            TF_tenmin_arg_watt_array.shift();
+            EM_tenmin_total_watt_array.shift();
+            TF_tenmin_total_watt_array.shift();
+            EMTF_tenmin_date_axis.push(document.getElementById('EM_tenmin_date_id').innerHTML);
+            EMTF_tenmin_date_axis.shift();
+            EMTF_tenmin_arg_data = [EM_tenmin_arg_watt_array, TF_tenmin_arg_watt_array];
+            EMTF_tenmin_total_data = [EM_tenmin_total_watt_array, TF_tenmin_total_watt_array];
             myChart.update();
-        }else if(hoursarg_text[hoursarg_text.length - 1] != document.getElementById('EMhourdate').innerHTML){
-            EMhourargwatt.push(document.getElementById('EMhourargwatt').innerHTML);
-            TFhourargwatt.push(document.getElementById('TFhourargwatt').innerHTML);
-            EMhourtotalwatt.push(document.getElementById('EMhourtotalwatt').innerHTML);
-            TFhourtotalwatt.push(document.getElementById('TFhourtotalwatt').innerHTML);
-            EMhourtotalwatt.shift();
-            TFhourtotalwatt.shift();
-            EMhourargwatt.shift();
-            TFhourargwatt.shift();
-            hoursarg_text.push(document.getElementById('EMhourdate').innerHTML);
-            hoursarg_text.shift();
-            hoursargdata=[EMhourargwatt,TFhourargwatt];
-            hourstotaldata = [EMhourtotalwatt,TFhourtotalwatt];
+        } else if (EMTF_hour_date_axis[EMTF_hour_date_axis.length - 1] != document.getElementById('EM_hour_date_id').innerHTML) {
+            EM_hour_arg_watt_array.push(document.getElementById('EM_hour_arg_watt_id').innerHTML);
+            TF_hour_arg_watt_array.push(document.getElementById('TF_hour_arg_watt_id').innerHTML);
+            EM_hour_total_watt_array.push(document.getElementById('EM_hour_total_watt_id').innerHTML);
+            TF_hour_total_watt_array.push(document.getElementById('TF_hour_total_watt_id').innerHTML);
+
+            EM_hour_total_watt_array.shift();
+            TF_hour_total_watt_array.shift();
+            EM_hour_arg_watt_array.shift();
+            TF_hour_arg_watt_array.shift();
+            EMTF_hour_date_axis.push(document.getElementById('EM_hour_date_id').innerHTML);
+            EMTF_hour_date_axis.shift();
+            EMTF_hour_arg_data = [EM_hour_arg_watt_array, TF_hour_arg_watt_array];
+            EMTF_hour_total_data = [EM_hour_total_watt_array, TF_hour_total_watt_array];
             myChart.update();
-        }else if(days_text[days_text.length - 1] != document.getElementById('EMyeardate').innerHTML){
-            EMyeartotalwatt.push(document.getElementById('EMhourtotalwatt').innerHTML);
-            TFyeartotalwatt.push(document.getElementById('TFhourtotalwatt').innerHTML);
-            EMyeartotalwatt.shift();
-            TFyeartotalwatt.shift();
-            days_text.push(document.getElementById('EMyeardate').innerHTML);
-            days_text.shift();
-            yearstotaldata = [EMyeartotalwatt,TFyeartotalwatt];
+        } else if (EMTF_thirtymin_date_axis[EMTF_thirtymin_date_axis.length - 1] != document.getElementById('EM_thirtymin_date_id').innerHTML) {
+            EM_thirtymin_arg_watt_array.push(document.getElementById('EM_thirtymin_arg_watt_id').innerHTML);
+            TF_thirtymin_arg_watt_array.push(document.getElementById('TF_thirtymin_arg_watt_id').innerHTML);
+            EM_thirtymin_total_watt_array.push(document.getElementById('EM_thirtymin_total_watt_id').innerHTML);
+            TF_thirtymin_total_watt_array.push(document.getElementById('TF_thirtymin_total_watt_id').innerHTML);
+
+            EM_thirtymin_arg_watt_array.shift();
+            EM_thirtymin_total_watt_array.shift();
+            TF_thirtymin_arg_watt_array.shift();
+            TF_thirtymin_total_watt_array.shift();
+            EMTF_thirtymin_date_axis.push(document.getElementById('EM_thirtymin_date_id').innerHTML);
+            EMTF_thirtymin_date_axis.shift();
+            EMTF_thirtymin_arg_data = [EM_thirtymin_arg_watt_array, TF_thirtymin_arg_watt_array];
+            EMTF_thirtymin_total_data = [EM_thirtymin_total_watt_array, TF_thirtymin_total_watt_array];
             myChart.update();
         }
     }, 1000);
-    var Shelly1_Datas = {
-        minutes: minutesargdata[0],
-        hours: hoursargdata[0],
-        days: hourstotaldata[0],
-        weeks: yearstotaldata[0]
+    var ShellyEM_Datas = {
+        tenmin_arg_data: EMTF_tenmin_arg_data[0],
+        hour_arg_data: EMTF_hour_arg_data[0],
+        thirty_arg_data: EMTF_thirtymin_arg_data[0],
+        tenmin_total_data: EMTF_tenmin_total_data[0],
+        hour_total_data: EMTF_hour_total_data[0],
+        thirty_total_data: EMTF_thirtymin_total_data[0]
     };
-    var Shelly2_Datas = {
-        minutes: minutesargdata[1],
-        hours: hoursargdata[1],
-        days: hourstotaldata[1],
-        weeks: yearstotaldata[1]
+    var Shelly25_Datas = {
+        tenmin_arg_data: EMTF_tenmin_arg_data[1],
+        hour_arg_data: EMTF_hour_arg_data[1],
+        thirty_arg_data: EMTF_thirtymin_arg_data[1],
+        tenmin_total_data: EMTF_tenmin_total_data[1],
+        hour_total_data: EMTF_hour_total_data[1],
+        thirty_total_data: EMTF_thirtymin_total_data[1]
     };
-    var Shelly3_Datas = {
-        minutes: minutesargdata[2],
-        hours: hoursargdata[2],
-        days: hourstotaldata[2],
-        weeks: yearstotaldata[2]
+    var AC_Datas = {
+        tenmin_arg_data: EMTF_tenmin_arg_data[3],
+        hour_arg_data: EMTF_hour_arg_data[3],
+        thirty_arg_data: EMTF_thirtymin_arg_data[3],
+        tenmin_total_data: EMTF_tenmin_total_data[3],
+        hour_total_data: EMTF_hour_total_data[3],
+        thirty_total_data: EMTF_thirtymin_total_data[3]
     };
-    // console.log("Shelly1", Shelly1_Datas);
-    // console.log("Shelly2", Shelly2_Datas);
-    // console.log("Shelly3", Shelly3_Datas);
-    // ----- End Line -----
-
-    // ----- Main Part -----
     window.shellyNum = 0;
     window.rangeNum = 0;
-
-    const minutesarg_text = '<%-ejsEMtenminsdate%>'.split(",");
-
-    const hoursarg_text = '<%-ejsEMhoursdate%>'.split(",");
-
-    const days_text = '<%-ejsEMyearsdate%>'.split(",");
-    const weeks_text = ['Week1', 'Week2', 'Week3', 'Week4'];
-    window.chartLabels = minutesarg_text; // 預設檢視範圍 : 過去一小時
-
-    window.Datas = Shelly1_Datas.minutes;
+    window.chartLabels = EMTF_tenmin_date_axis; // 預設檢視範圍 : 過去一小時
+    window.Datas = ShellyEM_Datas.tenmin_arg_data;
 
     var chartlabel = '當前功率w';
     // 初始化 Chart
@@ -290,8 +332,8 @@
             if (item != checkbox) item.checked = false;
         })
         socket.emit('btnSW', num);
-        //$("#value").load("http://localhost:4000/" + " #value");
         $("#value").load("https://murmuring-temple-18681.herokuapp.com/" + " #value");
+        //$("#value").load("http://localhost:4000/" + " #value");
         if (num == 0) {
             window.shellyNum = 0;
         } else if (num == 1) {
@@ -311,23 +353,25 @@
             if (item != checkbox) item.checked = false;
         })
         window.rangeNum = num;
-        if (num == 0){
-          window.chartLabels = minutesarg_text;
-          chartlabel = "當前功率w";
-        } 
-        else if (num == 1){
-           window.chartLabels = hoursarg_text;
-           chartlabel = "當前功率w";
-        } 
-        else if (num == 2){
-           window.chartLabels = hoursarg_text;
-           chartlabel = "累計損耗功率kwh"
-        } 
-        else{
-           window.chartLabels = days_text; 
-           chartlabel = "累計損耗功率kwh"
-        } 
-
+        if (num == 0) {
+            window.chartLabels = EMTF_tenmin_date_axis;
+            chartlabel = "當前功率w";
+        } else if (num == 1) {
+            window.chartLabels = EMTF_hour_date_axis;
+            chartlabel = "當前功率w";
+        } else if (num == 2) {
+            window.chartLabels = EMTF_thirtymin_date_axis;
+            chartlabel = "當前功率w";
+        } else if (num == 3) {
+            window.chartLabels = EMTF_tenmin_date_axis;
+            chartlabel = "累計損耗功率kwh"
+        } else if (num == 4) {
+            window.chartLabels = EMTF_hour_date_axis;
+            chartlabel = "累計損耗功率kwh"
+        } else if (num == 5) {
+            window.chartLabels = EMTF_thirtymin_date_axis;
+            chartlabel = "累計損耗功率kwh"
+        }
         myChart.data.labels = window.chartLabels;
         myChart.data.datasets[0].label = chartlabel;
         setChart(window.shellyNum, window.rangeNum);
@@ -337,20 +381,26 @@
     // set chart
     function setChart(shelly, range) {
         if (shelly == 0) {
-            if (range == 0) window.Datas = Shelly1_Datas.minutes;
-            else if (range == 1) window.Datas = Shelly1_Datas.hours;
-            else if (range == 2) window.Datas = Shelly1_Datas.days;
-            else window.Datas = Shelly1_Datas.weeks;
+            if (range == 0) window.Datas = ShellyEM_Datas.tenmin_arg_data;
+            else if (range == 1) window.Datas = ShellyEM_Datas.hour_arg_data;
+            else if (range == 2) window.Datas = ShellyEM_Datas.thirty_arg_data;
+            else if (range == 3) window.Datas = ShellyEM_Datas.tenmin_total_data;
+            else if (range == 4) window.Datas = ShellyEM_Datas.hour_total_data;
+            else if (range == 5) window.Datas = ShellyEM_Datas.thirty_total_data;
         } else if (shelly == 1) {
-            if (range == 0) window.Datas = Shelly2_Datas.minutes;
-            else if (range == 1) window.Datas = Shelly2_Datas.hours;
-            else if (range == 2) window.Datas = Shelly2_Datas.days;
-            else window.Datas = Shelly2_Datas.weeks;
+            if (range == 0) window.Datas = Shelly25_Datas.tenmin_arg_data;
+            else if (range == 1) window.Datas = Shelly25_Datas.hour_arg_data;
+            else if (range == 2) window.Datas = Shelly25_Datas.thirty_arg_data;
+            else if (range == 3) window.Datas = Shelly25_Datas.tenmin_total_data;
+            else if (range == 4) window.Datas = Shelly25_Datas.hour_total_data;
+            else if (range == 5) window.Datas = Shelly25_Datas.thirty_total_data;
         } else if (shelly == 2) {
-            if (range == 0) window.Datas = Shelly3_Datas.minutes;
-            else if (range == 1) window.Datas = Shelly3_Datas.hours;
-            else if (range == 2) window.Datas = Shelly3_Datas.days;
-            else window.Datas = Shelly3_Datas.weeks;
+            if (range == 0) window.Datas = AC_Datas.tenmin_arg_data;
+            else if (range == 1) window.Datas = AC_Datas.hour_arg_data;
+            else if (range == 2) window.Datas = AC_Datas.thirty_arg_data;
+            else if (range == 3) window.Datas = AC_Datas.tenmin_total_data;
+            else if (range == 4) window.Datas = AC_Datas.hour_total_data;
+            else if (range == 5) window.Datas = AC_Datas.thirty_total_data;
         }
         myChart.data.datasets[0].data = window.Datas;
     }

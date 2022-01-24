@@ -125,11 +125,11 @@
 }
 .shelly_selection{
     float: left;
-    width: 58%;
+    width: 55%;
 }
 .range_selection{
     float: right;
-    width: 42%;
+    width: 45%;
     border-left: 2px solid rgb(136, 136, 136);
     padding-left: 20px;
 }
@@ -191,8 +191,27 @@ canvas{
     margin-top: 20px;
     background-color: whitesmoke;
     box-shadow: 0 10px 10px #e2e2e2 ;
+    border-radius: 5px;
 }
-.digital_text,.control_text{
+
+/* .Digital_highlight{
+    height: 220px;
+    margin-top: 20px;
+    background-color: #03857D;
+    box-shadow: 0 10px 10px #e2e2e2 ;
+    border-radius: 5px;
+} */
+
+.digital_text{
+    position: relative;
+    top: 20px;
+    left: 35px;
+    width: auto;
+    font-size: 30px;
+    font-weight: 600;
+}
+
+.control_text{
     position: relative;
     top: 20px;
     left: 35px;

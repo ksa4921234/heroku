@@ -4,16 +4,16 @@ const app = new express();
 const ejs = require('ejs');
 const mongoose = require('mongoose');
 
-const EMPowernow = require('./models/EMPowernow.js')
-const EMPowertenmin = require('./models/EMPowertemin.js')
-const EMPoweryear = require('./models/EMPoweryear.js')
-const EMPowerhour = require('./models/EMPowerhours.js')
-const EMPowerday = require('./models/EMPowerdays.js')
-const TFPowernow = require('./models/TFPowernow.js')
-const TFPowertenmin = require('./models/TFPowertemin.js')
-const TFPoweryear = require('./models/TFPoweryear.js')
-const TFPowerhour = require('./models/TFPowerhours.js')
-const TFPowerday = require('./models/TFPowerdays.js')
+const EMPower_now = require('./models/EMPower_now.js')
+const EMPower_tenmin = require('./models/EMPower_temin.js')
+const EMPower_thirtymin = require('./models/EMPower_thirtymin.js')
+const EMPower_hour = require('./models/EMPower_hour.js')
+const EMPower_day = require('./models/EMPower_day.js')
+const TFPower_now = require('./models/TFPower_now.js')
+const TFPower_tenmin = require('./models/TFPower_temin.js')
+const TFPower_thirtymin = require('./models/TFPower_thirtymin.js')
+const TFPower_hour = require('./models/TFPower_hour.js')
+const TFPower_day = require('./models/TFPower_day.js')
 const ACPost = require('./models/ACPost.js')
 
 
@@ -41,181 +41,177 @@ app.use(express.json())
 app.use(express.urlencoded())
 
 app.get('/', async (req, res) => {
-    const EMPowernows = await EMPowernow.find({})
-    const EMPowertenmins = await EMPowertenmin.find({})
-    const EMPoweryears = await EMPoweryear.find({})
-    const EMPowerhours = await EMPowerhour.find({})
-    const EMPowerdays = await EMPowerday.find({})
-    const TFPowernows = await TFPowernow.find({})
-    const TFPowertenmins = await TFPowertenmin.find({})
-    const TFPoweryears = await TFPoweryear.find({})
-    const TFPowerhours = await TFPowerhour.find({})
-    const TFPowerdays = await TFPowerday.find({})
+    const EMPower_now_find = await EMPower_now.find({})
+    const EMPower_tenmin_find = await EMPower_tenmin.find({})
+    const EMPower_thirtymin_find = await EMPower_thirtymin.find({})
+    const EMPower_hour_find = await EMPower_hour.find({})
+    const EMPower_day_find = await EMPower_day.find({})
+    const TFPower_now_find = await TFPower_now.find({})
+    const TFPower_tenmin_find = await TFPower_tenmin.find({})
+    const TFPower_thirtymin_find = await TFPower_thirtymin.find({})
+    const TFPower_hour_find = await TFPower_hour.find({})
+    const TFPower_day_find = await TFPower_day.find({})
     const ACPosts = await ACPost.find({})
     //EM當下
-    var EMnowwatt = EMPowernows[EMPowernows.length - 1].功率;
-    var EMnowvolt = EMPowernows[EMPowernows.length - 1].電壓;
-    var EMnowdate =
-        EMPowernows[EMPowernows.length - 1].createdAt.getHours() + ":" +
-        EMPowernows[EMPowernows.length - 1].createdAt.getMinutes();
+    var EM_now_watt = EMPower_now_find[EMPower_now_find.length - 1].功率;
+    var EM_now_volt = EMPower_now_find[EMPower_now_find.length - 1].電壓;
+    var EM_now_date =
+        EMPower_now_find[EMPower_now_find.length - 1].createdAt.getHours() + ":" +
+        EMPower_now_find[EMPower_now_find.length - 1].createdAt.getMinutes();
     //EM十分鐘
-    var EMtenminsargwatts = [],
-        EMtenminstotalwatts = [],
-        EMtenminsdates = [];
-    for (i = EMPowertenmins.length - 7; i < EMPowertenmins.length; i++) {
-        EMtenminsargwatts.push(EMPowertenmins[i].十分鐘平均功率);
-        EMtenminstotalwatts.push((EMPowertenmins[i].十分鐘總共功率 / 1000).toFixed(2));
-        EMtenminsdates.push(EMPowertenmins[i].createdAt.getHours() + ":" +
-            EMPowertenmins[i].createdAt.getMinutes());
+    var EM_tenmin_arg_watt = [],
+        EM_tenmin_total_watt = [],
+        EM_tenmin_date = [];
+    for (i = EMPower_tenmin_find.length - 7; i < EMPower_tenmin_find.length; i++) {
+        EM_tenmin_arg_watt.push(EMPower_tenmin_find[i].十分鐘平均功率);
+        EM_tenmin_total_watt.push((EMPower_tenmin_find[i].十分鐘總共功率 / 1000).toFixed(2));
+        EM_tenmin_date.push(EMPower_tenmin_find[i].createdAt.getHours() + ":" + EMPower_tenmin_find[i].createdAt.getMinutes());
     }
-    EMtenminsargwatts = JSON.stringify(EMtenminsargwatts);
-    EMtenminstotalwatts = JSON.stringify(EMtenminstotalwatts);
-    EMtenminsdates = JSON.stringify(EMtenminsdates);
+    EM_tenmin_arg_watt = JSON.stringify(EM_tenmin_arg_watt);
+    EM_tenmin_total_watt = JSON.stringify(EM_tenmin_total_watt);
+    EM_tenmin_date = JSON.stringify(EM_tenmin_date);
     //EM半小時
-    var EMyearstotalwatts = [],
-        EMyearsdates = [];
-    EMyearstotalwatts[0] = (EMPoweryears[0].長時間總共功率/1000).toFixed(2);
-    EMyearsdates[0] = EMPoweryears[0].createdAt.getDate() + "日";
-    for (i = 1; i < EMPoweryears.length; i++) {
-        EMyearstotalwatts[i] = (EMPoweryears[i].長時間總共功率 / 1000).toFixed(2);
-        EMyearsdates[i] = "";
+    var EM_thirtymin_arg_watt = [],
+        EM_thirtymin_total_watt = [],
+        EM_thirtymin_date = [];
+    EM_thirtymin_arg_watt[0] = EMPower_thirtymin_find[0].長時間平均功率;
+    EM_thirtymin_total_watt[0] = (EMPower_thirtymin_find[0].長時間總共功率 / 1000).toFixed(2);
+    EM_thirtymin_date[0] = EMPower_thirtymin_find[0].createdAt.getDate() + "日";
+    for (i = 1; i < EMPower_thirtymin_find.length; i++) {
+        EM_thirtymin_arg_watt[i] = EMPower_thirtymin_find[i].長時間平均功率;
+        EM_thirtymin_total_watt[i] = (EMPower_thirtymin_find[i].長時間總共功率 / 1000).toFixed(2);
+        EM_thirtymin_date[i] = "";
     }
-    EMyearstotalwatts[EMPoweryears.length] = (EMPoweryears[EMPoweryears.length - 1].長時間總共功率/1000).toFixed(2);
-    EMyearsdates[EMPoweryears.length] = EMPoweryears[EMPoweryears.length - 1].createdAt.getDate() + "日";
-    EMyearstotalwatts = JSON.stringify(EMyearstotalwatts);
-    EMyearsdates = JSON.stringify(EMyearsdates);
+    EM_thirtymin_arg_watt[EMPower_thirtymin_find.length] = EMPower_thirtymin_find[EMPower_thirtymin_find.length - 1].長時間平均功率;
+    EM_thirtymin_total_watt[EMPower_thirtymin_find.length] = (EMPower_thirtymin_find[EMPower_thirtymin_find.length - 1].長時間總共功率 / 1000).toFixed(2);
+    EM_thirtymin_date[EMPower_thirtymin_find.length] = EMPower_thirtymin_find[EMPower_thirtymin_find.length - 1].createdAt.getDate() + "日";
+    EM_thirtymin_arg_watt = JSON.stringify(EM_thirtymin_arg_watt);
+    EM_thirtymin_total_watt = JSON.stringify(EM_thirtymin_total_watt);
+    EM_thirtymin_date = JSON.stringify(EM_thirtymin_date);
     //EM一小時
-    var EMhourargwatts = [],
-        EMhourtotalwatts = [],
-        EMhoursdates = [];
-    if (EMPowerhours.length >= 24) {
-        for (i = EMPowerhours.length - 24; i < EMPowerhours.length; i++) {
-            EMhourargwatts.push(EMPowerhours[i].小時平均功率);
-            EMhourtotalwatts.push((EMPowerhours[i].小時總共功率 / 1000).toFixed(2));
-            EMhoursdates.push(EMPowerhours[i].createdAt.getDate() + "日" +
-                EMPowerhours[i].createdAt.getHours() + "時");
+    var EM_hour_arg_watt = [],
+        EM_hour_total_watt = [],
+        EM_hour_date = [];
+    if (EMPower_hour_find.length >= 24) {
+        for (i = EMPower_hour_find.length - 24; i < EMPower_hour_find.length; i++) {
+            EM_hour_arg_watt.push(EMPower_hour_find[i].小時平均功率);
+            EM_hour_total_watt.push((EMPower_hour_find[i].小時總共功率 / 1000).toFixed(2));
+            EM_hour_date.push(EMPower_hour_find[i].createdAt.getDate() + "日" + EMPower_hour_find[i].createdAt.getHours() + "時");
         }
-
     } else {
         for (i = 0; i < 24; i++) {
-            EMhourargwatts.push(0);
-            EMhourtotalwatts.push(0);
-            EMhoursdates.push("No Data on Server!");
+            EM_hour_arg_watt.push(0);
+            EM_hour_total_watt.push(0);
+            EM_hour_date.push("No Data on Server!");
         }
     }
-    EMhourargwatts = JSON.stringify(EMhourargwatts);
-    EMhourtotalwatts = JSON.stringify(EMhourtotalwatts);
-    EMhoursdates = JSON.stringify(EMhoursdates);
+    EM_hour_arg_watt = JSON.stringify(EM_hour_arg_watt);
+    EM_hour_total_watt = JSON.stringify(EM_hour_total_watt);
+    EM_hour_date = JSON.stringify(EM_hour_date);
     //TF當下
-    var TFnowwatt = TFPowernows[TFPowernows.length - 1].功率;
-    var TFnowvolt = TFPowernows[TFPowernows.length - 1].電壓;
-    var TFnowdate =
-        TFPowernows[TFPowernows.length - 1].createdAt.getHours() + ":" +
-        TFPowernows[TFPowernows.length - 1].createdAt.getMinutes();
+    var TF_now_watt = TFPower_now_find[TFPower_now_find.length - 1].功率;
+    var TF_now_volt = TFPower_now_find[TFPower_now_find.length - 1].電壓;
+    var TF_now_date =
+        TFPower_now_find[TFPower_now_find.length - 1].createdAt.getHours() + ":" +
+        TFPower_now_find[TFPower_now_find.length - 1].createdAt.getMinutes();
     //TF十分鐘
-    var TFtenminsargwatts = [],
-        TFtenminstotalwatts = [];
-    for (i = TFPowertenmins.length - 7; i < TFPowertenmins.length; i++) {
-        TFtenminsargwatts.push(TFPowertenmins[i].十分鐘平均功率);
-        TFtenminstotalwatts.push((TFPowertenmins[i].十分鐘總共功率 / 1000).toFixed(2));
+    var TF_tenmin_arg_watt = [],
+        TF_tenmin_total_watt = [];
+    for (i = TFPower_tenmin_find.length - 7; i < TFPower_tenmin_find.length; i++) {
+        TF_tenmin_arg_watt.push(TFPower_tenmin_find[i].十分鐘平均功率);
+        TF_tenmin_total_watt.push((TFPower_tenmin_find[i].十分鐘總共功率 / 1000).toFixed(2));
     }
-    TFtenminsargwatts = JSON.stringify(TFtenminsargwatts);
-    TFtenminstotalwatts = JSON.stringify(TFtenminstotalwatts);
+    TF_tenmin_arg_watt = JSON.stringify(TF_tenmin_arg_watt);
+    TF_tenmin_total_watt = JSON.stringify(TF_tenmin_total_watt);
     //TF半小時
-    var TFyearstotalwatts = [],
-        TFyearsdates = [];
-    TFyearstotalwatts[0] = (TFPoweryears[0].長時間總共功率/1000).toFixed(2)
-    TFyearsdates[0] = TFPoweryears[0].createdAt.getDate() + "日";
-    for (i = 1; i < TFPoweryears.length; i++) {
-        TFyearstotalwatts[i] = (TFPoweryears[i].長時間總共功率 / 1000).toFixed(2);
-        TFyearsdates[i] = "";
+    var TF_thirtymin_arg_watt = [],
+        TF_thirtymin_total_watt = [];
+    TF_thirtymin_arg_watt[0] = TFPower_thirtymin_find[0].長時間平均功率;
+    TF_thirtymin_total_watt[0] = (TFPower_thirtymin_find[0].長時間總共功率 / 1000).toFixed(2);
+    for (i = 1; i < TFPower_thirtymin_find.length; i++) {
+        TF_thirtymin_arg_watt[i] = TFPower_thirtymin_find[i].長時間平均功率;
+        TF_thirtymin_total_watt[i] = (TFPower_thirtymin_find[i].長時間總共功率 / 1000).toFixed(2);
     }
-    TFyearstotalwatts[TFPoweryears.length] = (TFPoweryears[TFPoweryears.length - 1].長時間總共功率/1000).toFixed(2);
-    TFyearsdates[TFPoweryears.length] = TFPoweryears[TFPoweryears.length - 1].createdAt.getDate() + "日";
-    TFyearstotalwatts = JSON.stringify(TFyearstotalwatts);
-    TFyearsdates = JSON.stringify(TFyearsdates);
+    TF_thirtymin_arg_watt[TFPower_thirtymin_find.length] = TFPower_thirtymin_find[TFPower_thirtymin_find.length - 1].長時間平均功率;
+    TF_thirtymin_total_watt[TFPower_thirtymin_find.length] = (TFPower_thirtymin_find[TFPower_thirtymin_find.length - 1].長時間總共功率 / 1000).toFixed(2);
+    TF_thirtymin_arg_watt = JSON.stringify(TF_thirtymin_arg_watt);
+    TF_thirtymin_total_watt = JSON.stringify(TF_thirtymin_total_watt);
     //TF小時
-    var TFhourargwatts = [],
-        TFhourtotalwatts = [];
-    if (TFPowerhours.length >= 24) {
-        for (i = TFPowerhours.length - 24; i < TFPowerhours.length; i++) {
-            TFhourargwatts.push(TFPowerhours[i].小時平均功率);
-            TFhourtotalwatts.push((TFPowerhours[i].小時總共功率 / 1000).toFixed(2));
+    var TF_hour_arg_watt = [],
+        TF_hour_total_watt = [];
+    if (TFPower_hour_find.length >= 24) {
+        for (i = TFPower_hour_find.length - 24; i < TFPower_hour_find.length; i++) {
+            TF_hour_arg_watt.push(TFPower_hour_find[i].小時平均功率);
+            TF_hour_total_watt.push((TFPower_hour_find[i].小時總共功率 / 1000).toFixed(2));
         }
-
     } else {
         for (i = 0; i < 24; i++) {
-            TFhourargwatts.push(0);
-            TFhourtotalwatts.push(0);
+            TF_hour_arg_watt.push(0);
+            TF_hour_total_watt.push(0);
         }
     }
-    TFhourargwatts = JSON.stringify(TFhourargwatts);
-    TFhourtotalwatts = JSON.stringify(TFhourtotalwatts);
-    var ACtmp = ACPosts[ACPosts.length - 1].溫度;
-    var AChum = ACPosts[ACPosts.length - 1].濕度;
-    var AChumarray = [];
-    for (i = ACPosts.length - 7; i < ACPosts.length; i++) {
-        AChumarray.push(ACPosts[i].濕度);
-    };
-    AChumarray = JSON.stringify(AChumarray);
-    var nowsendfirst,
-        nowsendsec,
-        nowsendthird,
-        nowsendfour,
-        nowsendfive;
+    TF_hour_arg_watt = JSON.stringify(TF_hour_arg_watt);
+    TF_hour_total_watt = JSON.stringify(TF_hour_total_watt);
+    var AC_tmp = ACPosts[ACPosts.length - 1].溫度;
+    var AC_hum = ACPosts[ACPosts.length - 1].濕度;
+    var now_send_first,
+        now_send_second,
+        now_send_third,
+        now_send_four,
+        now_send_five;
     if (sendflag == 0) {
-        nowsendfirst = "當前用電量ShellyEM";
-        nowsendsec = "Watt";
-        if (EMnowwatt > 1000) nowsendthird = (EMnowwatt / 1000).toFixed(2) + " kw";
-        else nowsendthird = EMnowwatt + " w";
-        nowsendfour = "Voltage";
-        nowsendfive = EMnowvolt + " V";
+        now_send_first = "當前用電量ShellyEM";
+        now_send_second = "Watt";
+        if (EM_now_watt > 1000) now_send_third = (EM_now_watt / 1000).toFixed(2) + " kw";
+        else now_send_third = EM_now_watt + " w";
+        now_send_four = "Voltage";
+        now_send_five = EM_now_volt + " V";
     } else if (sendflag == 1) {
-        nowsendfirst = "當前用電量Shelly25";
-        nowsendsec = "Watt";
-        nowsendthird = TFnowwatt + " w";
-        nowsendfour = "Voltage";
-        nowsendfive = TFnowvolt + " V";
+        now_send_first = "當前用電量Shelly25";
+        now_send_second = "Watt";
+        now_send_third = TF_now_watt + " w";
+        now_send_four = "Voltage";
+        now_send_five = TF_now_volt + " V";
     } else if (sendflag == 2) {
-        nowsendfirst = "當前冷氣狀態";
-        nowsendsec = "溫度";
-        nowsendthird = ACtmp + " 度";
-        nowsendfour = "濕度";
-        nowsendfive = AChum + " %";
+        now_send_first = "當前冷氣狀態";
+        now_send_second = "溫度";
+        now_send_third = AC_tmp + " 度";
+        now_send_four = "濕度";
+        now_send_five = AC_hum + " %";
     }
 
     res.render('index', {
-        EMPowernow: EMPowernows,
-        EMnowwatt: EMnowwatt,
-        EMnowdate: EMnowdate,
-        EMtenminsargwatt: EMtenminsargwatts,
-        EMtenminstotalwatt: EMtenminstotalwatts,
-        EMyearstotalwatt: EMyearstotalwatts,
-        EMyearsdate: EMyearsdates,
-        EMtenminsdate: EMtenminsdates,
-        EMhourargwatt: EMhourargwatts,
-        EMhourtotalwatt: EMhourtotalwatts,
-        EMhoursdate: EMhoursdates,
+        EMPower_now_ejs: EMPower_now_find,
+        EM_now_watt_ejs: EM_now_watt,
+        EM_now_date_ejs: EM_now_date,
+        EM_tenmin_arg_watt_ejs: EM_tenmin_arg_watt,
+        EM_tenmin_total_watt_ejs: EM_tenmin_total_watt,
+        EM_thirtymin_arg_watt_ejs: EM_thirtymin_arg_watt,
+        EM_thirtymin_total_watt_ejs: EM_thirtymin_total_watt,
+        EM_thirtymin_date_ejs: EM_thirtymin_date,
+        EM_tenmin_date_ejs: EM_tenmin_date,
+        EM_hour_arg_watt_ejs: EM_hour_arg_watt,
+        EM_hour_total_watt_ejs: EM_hour_total_watt,
+        EM_hour_date_ejs: EM_hour_date,
 
-        TFPowernow: TFPowernows,
-        TFnowwatt: TFnowwatt,
-        TFnowdate: TFnowdate,
-        TFtenminsargwatt: TFtenminsargwatts,
-        TFtenminstotalwatt: TFtenminstotalwatts,
-        TFyearstotalwatt: TFyearstotalwatts,
-        TFyearsdate: TFyearsdates,
-        TFhourargwatt: TFhourargwatts,
-        TFhourtotalwatt: TFhourtotalwatts,
+        TFPower_now_ejs: TFPower_now_find,
+        TF_now_watt_ejs: TF_now_watt,
+        TF_now_date_ejs: TF_now_date,
+        TF_tenmin_arg_watt_ejs: TF_tenmin_arg_watt,
+        TF_tenmin_total_watt_ejs: TF_tenmin_total_watt,
+        TF_thirtymin_arg_watt_ejs: TF_thirtymin_arg_watt,
+        TF_thirtymin_total_watt_ejs: TF_thirtymin_total_watt,
+        TF_hour_arg_watt_ejs: TF_hour_arg_watt,
+        TF_hour_total_watt_ejs: TF_hour_total_watt,
 
-        ACtmps: ACtmp,
-        AChums: AChum,
-        AChumarrays: AChumarray,
+        AC_tmp_ejs: AC_tmp,
+        AC_hum_ejs: AC_hum,
 
-        nowsendfirsts: nowsendfirst,
-        nowsendsecs: nowsendsec,
-        nowsendthirds: nowsendthird,
-        nowsendfours: nowsendfour,
-        nowsendfives: nowsendfive
+        now_send_first_ejs: now_send_first,
+        now_send_second_ejs: now_send_second,
+        now_send_third_ejs: now_send_third,
+        now_send_four_ejs: now_send_four,
+        now_send_five_ejs: now_send_five
     });
 })
 
@@ -264,11 +260,3 @@ sio.sockets.on('connection', function (socket) {
         sendflag = num;
     })
 });
-
-
-
-
-
-// (EMPowernows[EMPowernows.length - 1].createdAt.getYear() + 1900) + "-" +
-//         (EMPowernows[EMPowernows.length - 1].createdAt.getMonth() + 1) + "-" +
-//         EMPowernows[EMPowernows.length - 1].createdAt.getDate() + " " ;
