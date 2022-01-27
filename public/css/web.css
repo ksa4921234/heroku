@@ -125,11 +125,11 @@
 }
 .shelly_selection{
     float: left;
-    width: 45%;
+    width: 40%;
 }
 .range_selection{
     float: right;
-    width: 55%;
+    width: 60%;
     border-left: 2px solid rgb(136, 136, 136);
     padding-left: 20px;
 }
